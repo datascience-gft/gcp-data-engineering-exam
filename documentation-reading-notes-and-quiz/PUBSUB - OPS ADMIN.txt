@@ -1,0 +1,35 @@
++ Managing Topics
+
+You can create, delete, and view topics using the API, the Google Cloud Console, or the gcloud command-line tool. See the gcloud pubsub reference for a complete list of Pub/Sub API gcloud commands.
+
++ Monitoring 
+
+Viewing metrics
+
+Go to Stackdriver in Google Cloud Console to view Stackdriver monitoring dashboards or to define Stackdriver alerts. You can also use the Stackdriver monitoring API to query and view metrics for subscriptions and topics.
+Metrics and resource types
+
+    To see the usage metrics that Pub/Sub reports to Stackdriver, view the Metrics List in the Stackdriver documentation.
+    To see the details for the pubsub_topic pubsub_subscription or pubsub_snapshot monitored resource types, view Monitored Resource Types in the Stackdriver documentation.
+
+
++ Configuring message encryption
+
+Pub/Sub encrypts messages with Google-managed keys by default. There is no setup or configuration required and no need to modify the way you access the service. Every message is encrypted at the following states and layers:
+
+    At rest
+        Hardware layer
+        Infrastructure layer
+        Application layer
+    In transit
+
+At the application layer, Pub/Sub individually encrypts incoming messages as soon as the message is received. This implementation adds the following features:
+
+    Keeps messages encrypted on data-center internal links
+    Enables customer-managed encryption keys (CMEK)
+
++ Using customer-managed encryption keys
+
+Pub/Sub uses the envelope encryption pattern with CMEK. In this approach, the messages are not encrypted by Cloud KMS. Instead Cloud KMS is used to encrypt Data Encryption Keys (DEKs) created by Pub/Sub for each topic. These DEKs are stored only in encrypted, or wrapped, form by Pub/Sub. Before storing a DEK, the service sends the DEK to Cloud KMS to be encrypted with the key encryption key (KEK) specified on the topic. A new DEK is generated for each topic approximately every six hours.
+
+Before Pub/Sub publishes messages to a subscription, it encrypts them using the newest DEK that was generated for the topic. Pub/Sub decrypts the messages shortly before they are delivered to subscribers.

@@ -1,0 +1,11 @@
+Dataflow templates allow you to stage your pipelines on Cloud Storage and run them from a variety of environments. You can use one of the Google-provided templates or create your own.
+
+Templates provide you with additional benefits compared to traditional Dataflow deployment, such as:
+
+    Running your pipeline does not require you to recompile your code every time.
+    You can run your pipelines without the development environment and associated dependencies that are common with traditional deployment. This is useful for scheduling recurring batch jobs.
+    Runtime parameters allow you to customize the execution of the pipeline.
+    Non-technical users can run templates with 
+	the Google Cloud Console, 
+	gcloud command-line tool, 
+	the REST API.

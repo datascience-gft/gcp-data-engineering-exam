@@ -1,0 +1,93 @@
+You can load data:
+
+    From Cloud Storage
+    From other Google services, such as Google Ad Manager and Google Ads
+    From a readable data source (such as your local machine)
+    By inserting individual records using streaming inserts
+    Using DML statements to perform bulk inserts
+    Using a BigQuery I/O transform in a Dataflow pipeline to write data to BigQuery
+
+Loading data into BigQuery from Google Drive is not currently supported.
+
+Limitations
+
+    Currently, you can load data into BigQuery only from Cloud Storage 
+    or a readable data source (such as your local machine).
+
+BigQuery supports loading data from Cloud Storage and readable data sources in the following formats:
+
+    Cloud Storage:
+        Avro
+        CSV
+        JSON (newline delimited only)
+        ORC
+        Parquet
+        Datastore exports
+        Firestore exports
+
+    Readable data source (such as your local machine):
+        Avro
+        CSV
+        JSON (newline delimited only)
+        ORC
+        Parquet
+
+
+BigQuery supports UTF-8 encoding for both nested or repeated and flat data. 
+BigQuery supports ISO-8859-1 encoding for flat data only for CSV files.
+
+Optionally, you can explicitly specify the encoding when you import your data 
+so that BigQuery can properly convert your data to UTF-8 during the import process. 
+
++ Loading compressed and uncompressed data
+
+The Avro binary format is the preferred format for loading both compressed and uncompressed data. 
+Avro data is faster to load because the data can be read in parallel, even when the data blocks are compressed. 
+
+Parquet binary format is also a good choice because Parquet's efficient, 
+per-column encoding typically results in a better compression ratio and smaller files. 
+
+The ORC binary format offers benefits similar to the benefits of the Parquet format.
+
+For other data formats such as CSV and JSON, 
+BigQuery can load uncompressed files significantly faster than compressed files 
+because uncompressed files can be read in parallel. 
+
++ Loading denormalized, nested, and repeated data
+
+BigQuery performs best when your data is denormalized.
+
+you can improve performance by denormalizing your data and taking advantage of nested and repeated fields.
+
++ Schema auto-detection
+
+You can use schema auto-detection when you load JSON or CSV files.
+Schema auto-detection is not available for Avro files, ORC files, Parquet files, Datastore exports, or Firestore exports
+
++ BigQuery Data Transfer Service
+
+Google Software as a Service (SaaS) apps
+
+    Campaign Manager
+    Cloud Storage
+    Google Ad Manager
+    Google Ads
+    Google Merchant Center (beta)
+    Google Play
+    Search Ads 360 (beta)
+    YouTube Channel reports
+    YouTube Content Owner reports
+
+External cloud storage providers
+
+    Amazon S3 (beta)
+
+Data warehouses
+
+    Teradata (beta)
+    Amazon Redshift (beta)
+
+Dataflow 
+can load data directly into BigQuery. 
+using BigQuery I/O connector
+

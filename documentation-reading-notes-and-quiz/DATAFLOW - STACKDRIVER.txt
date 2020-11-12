@@ -1,0 +1,14 @@
+Stackdriver Monitoring provides powerful logging and diagnostics. 
+
+Dataflow integration with Monitoring lets you access Dataflow job metrics such as 
+	Job Status, 
+	Element Counts, 
+	System Lag (for streaming jobs), 
+	and User Counters 
+from the Monitoring dashboards. 
+
+You can also employ Monitoring alerting capabilities to notify you of various conditions, such as long streaming system lag or failed jobs.
+
+Dataflow reports incremental updates to Monitoring approximately every 30 seconds. 
+
+Custom metrics are limited to 500 metrics per project.

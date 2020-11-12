@@ -1,0 +1,23 @@
+BigQuery views are subject to the following limitations:
+
+    The dataset, view,tables referenced by the view must be in the same <location>.
+    cannot exports data from a view.
+    A standard SQL query cannot reference a view defined using legacy SQL syntax.
+    You cannot reference query parameters in views.
+    The schemas of the underlying tables are stored with the view when the view is created.
+    You cannot include a user-defined function in the SQL query that defines a view.
+    You cannot reference a view in a wildcard table query.
+
+
+You cannot assign access controls directly to tables or views. 
+The lowest level of BigQuery resources to which you are able to grant access is the dataset level. 
+
++ authorized views
+
+Giving a view access to a dataset is also known as creating an authorized view in BigQuery. 
+An authorized view allows you to share query results with particular users and groups without giving them access to the underlying tables. 
+You can also use the view's SQL query to restrict the columns (fields) the users are able to query.
+
+IMPORTANT:
+When you create the view, it must be created in a dataset <separate> from the source data queried by the view.
+Because you can assign access controls only at the dataset level

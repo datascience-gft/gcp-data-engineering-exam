@@ -1,0 +1,28 @@
++ Service accounts
+
+Service accounts are recommended for almost all use cases, whether you are developing locally or in a production application. For an example of how to set up authentication with a service account, see Pub/Sub client libraries.
+
+
+You can authenticate users directly to your application, when the application needs to access resources on behalf of an end user. For most use cases, we recommend using a service account instead.
+
+Examples of why to use user accounts with Cloud Pub/Sub include:
+
+    Administrative actions
+
+    Note that identity information is captured in audit logs.
+
+If your application uses end user authentication, you need to specify OAuth scopes when making a method call.
+
+
++ Access control
+
+Pub/Sub uses Cloud Identity and Access Management (Cloud IAM) for access control.
+
+In Pub/Sub, access control can be configured at the project level and at the individual resource level. For example:
+
+    Grant access on a per-topic or per-subscription basis, rather than for the whole Cloud project.
+    Grant access with limited capabilities, such as to only publish messages to a topic, or to only consume messages from a subscription, but not to delete the topic or subscription.
+    Grant access to all Pub/Sub resources within a project to a group of developers.
+
+
+Every Pub/Sub method requires the caller to have the necessary permissions. For a list of the permissions and roles Pub/Sub Cloud IAM supports

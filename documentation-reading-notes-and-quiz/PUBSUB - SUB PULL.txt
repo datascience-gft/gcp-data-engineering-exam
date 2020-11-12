@@ -1,0 +1,49 @@
++ Asynchronous Pull
+
+Using asynchronous pulling provides higher throughput in your application, by not requiring your application to block for new messages.
+
++ Message Flow Control
+
+Your subscriber client might process and acknowledge messages more slowly than Pub/Sub sends them to the client. In this case:
+
+    It's possible that one client could have a backlog of messages because it doesn't have the capacity to process the volume of incoming messages, but another client on the network does have that capacity. The second client could reduce the subscription's backlog, but it doesn't get the chance to do so because the first client maintains a lease on the messages that it receives. This reduces the overall rate of processing because messages get stuck on the first client.
+
+    Because the client library repeatedly extends the acknowledgement deadline for backlogged messages, those messages continue to consume memory, CPU, and bandwidth resources. As such, the subscriber client might run out of resources (such as memory). This can adversely impact the throughput and latency of processing messages.
+
+
+To mitigate the issues above, use the flow control features of the subscriber to control the rate at which the subscriber receives messages. 
+
+More generally, the need for flow control indicates that messages are being published at a higher rate than they are being consumed. If this is a persistent state, rather than a transient spike in message volume, consider increasing the number of subscriber client instances.
+
++ Concurrency Control
+
+Support for concurrency depends on your programming language. For language implementations that support parallel threads, such as Java and Go, the client libraries make a default choice for the number of threads. This choice may not be optimal for your application. For example, if you find that your subscriber application is not keeping up with the incoming message volume but is not CPU-bound, you should increase the thread count. For CPU-intensive message processing operations, reducing the number of threads might be appropriate.
+
++ StreamingPull
+
+The Pub/Sub service has two APIs for retrieving messages:
+
+    Pull
+    StreamingPull
+
+Where possible, the Cloud Client libraries use StreamingPull for maximum throughput and lowest latency. 
+
++ Synchronous Pull
+
+There are cases when the asynchronous Pull is not a perfect fit for your application. 
+For example, the application logic might rely on a polling pattern to retrieve messages or require a precise cap on a number of messages retrieved by the client at any given time. 
+To support such applications, the service supports a synchronous Pull method.
+
++ Dealing with duplicates and forcing retries
+
+When you do not acknowledge a message before its acknowledgement deadline has expired, Pub/Sub resends the message. 
+As a result, Pub/Sub can send duplicate messages. Use the Google Cloud operations suite to monitor acknowledge operations with the expired response code to detect this condition. 
+To get this data, select the Acknowledge message operations metric, then group or filter it by the response_code label. 
+Note that response_code is a system label on a metric—it is not a metric.
+
+ To reduce the duplication rate, extend the message deadline.
+
+    Client libraries handle deadline extension automatically, but you should note that there are default limits on the maximum extension deadline that can be configured.
+    If you are building your own client library, use the modifyAckDeadline method to extend the acknowledgement deadline.
+
+Alternately, to force Pub/Sub to retry a message, set modifyAckDeadline to 0. 

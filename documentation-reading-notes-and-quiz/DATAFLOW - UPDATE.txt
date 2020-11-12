@@ -1,0 +1,60 @@
+When you update your job, the Dataflow service performs a compatibility check between your currently-running job and your potential replacement job. 
+
+The compatibility check ensures that things like intermediate state information and buffered data can be transferred from your prior job to your replacement job.
+
++ The update process and its effects
+
+When you update a job on the Dataflow service, you replace the existing job with a new job that runs your updated pipeline code. 
+The Dataflow service retains the job name, but runs the replacement job with an updated Job ID.
+
+The replacement job preserves any intermediate state data from the prior job, as well as any buffered data records or metadata currently "in-flight" from the prior job. 
+
++ In-flight data
+
+"In-flight" data will still be processed by the transforms in your new pipeline. However, additional transforms that you add in your replacement pipeline code may or may not take effect, depending on where the records are buffered. For example, let's say your existing pipeline has the following transforms:
+
+  p.apply("Read", ReadStrings())
+   .apply("Format", FormatStrings());
+
+You can replace your job with new pipeline code, as follows:
+
+  p.apply("Read", ReadStrings())
+   .apply("Remove", RemoveStringsStartingWithA())
+   .apply("Format", FormatStrings());
+
+Even though you've added a transform to filter out strings that begin with the letter "A", the next transform (FormatStrings) may still see buffered or in-flight strings that begin with "A" that were transferred over from the prior job.
+
++ Launching your replacement job
+
+To update your job, you'll need to launch a new job to replace the ongoing job. When you launch your replacement job, you'll need to set the following pipeline options to perform the update process in addition to the job's regular options:
+
+
+    Pass the --update option.
+    Set the --jobName option in PipelineOptions to the same name as the job you want to update.
+    If any transform names in your pipeline have changed, you must supply a transform mapping and pass it using the --transformNameMapping option.
+
++ Job compatibility check
+
+When you launch your replacement job, the Dataflow service performs a compatibility check between your replacement job and your prior job. 
+If the compatibility check passes, your prior job will be stopped. 
+Your replacement job will then launch on the Dataflow service while retaining the same job name. 
+If the compatibility check fails, your prior job will continue running on the Dataflow service and your replacement job will return an error.
+
++ Preventing compatibility breaks
+
+Certain differences between your prior pipeline and your replacement pipeline can cause the compatibility to check to fail. These differences include:
+
+    Changing the pipeline graph without providing a mapping. 
+	When you update a job, the Dataflow service attempts to match the transforms in your prior job to the transforms in the replacement job in order to transfer intermediate state data for each step. If you've renamed or removed any steps, you'll need to provide a transform mapping so that Dataflow can match state data accordingly.
+
+    Changing the side inputs for a step. 
+	Adding side inputs to or removing them from a transform in your replacement pipeline will cause the compatibility check to fail.
+
+    Changing the Coder for a step. 
+	When you update a job, the Dataflow service preserves any data records currently buffered (for example, while windowing is resolving) and handles them in the replacement job. If the replacement job uses different or incompatible data encoding, the Dataflow service will not be able to serialize or deserialize these records.
+
+    You've removed a "stateful" operation from your pipeline. 
+	Your replacement job might fail Dataflow's compatibility check if you remove certain stateful operations from your pipeline. 
+
+    You're attempting to run your replacement job in a different geographic zone. 
+	You must run your replacement job in the same zone in which you ran your prior job.

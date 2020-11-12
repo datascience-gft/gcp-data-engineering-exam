@@ -1,0 +1,281 @@
+A partitioned table is a special table that is divided into segments, called partitions, that make it easier to manage and query your data. 
+
+By dividing a large table into smaller partitions, you can improve query performance, 
+and you can control costs by reducing the number of bytes read by a query.
+
+You can partition BigQuery tables by:
+
+    Ingestion time: Tables are partitioned based on the data's ingestion (load) date or arrival date.
+
+    Date/timestamp: Tables are partitioned based on a TIMESTAMP or DATE column.
+
+    Integer range: Tables are partitioned based on an integer column.
+
++ Ingestion-time partitioned tables
+
+BigQuery automatically loads data into daily, date-based partitions that reflect the data's ingestion or arrival date. 
+Pseudo column and suffix identifiers allow you to restate (replace) and redirect data to partitions for a specific day.
+
+When you create an ingestion-time partitioned table, two pseudo columns are added to the table: 
+	_PARTITIONTIME 
+	_PARTITIONDATE
+
+_PARTITIONTIME and _PARTITIONDATE are available only in ingestion-time partitioned tables. 
+
+Queries against time-partitioned tables can restrict the data read by supplying _PARTITIONTIME filters that represent a partition's location. 
+All the data in the specified partition is read by the query, 
+but the _PARTITIONTIME predicate filter restricts the number of partitions scanned.
+
+When you create ingestion-time partitioned tables, 
+the partitions have the same schema definition as the table.
+
++ Date or timestamp partitioned tables
+
+BigQuery also allows partitioned tables based on a specific DATE or TIMESTAMP column. 
+Data written to a date/timestamp partitioned table is automatically delivered to the appropriate partition 
+based on the date value (expressed in UTC) in the partitioning column.
+
+Each partition in a date/timestamp partitioned table can be thought of as a range 
+where the start of the range is the BEGINNING OF A DAY, and the interval of the range is one day.
+
+Date/timestamp partitioned tables do NOT need a _PARTITIONTIME pseudo column.
+
+Queries against date/timestamp partitioned tables can specify predicate filters based on the partitioning column to reduce the amount of data scanned.
+
+When you create date/timestamp partitioned tables, two special partitions are created:
+
+    The __NULL__ partition: represents rows with NULL values in the partitioning column
+    The __UNPARTITIONED__ partition: represents data that exists outside the allowed range of dates
+
+Date/timestamp partitioned tables perform better than tables sharded by date. 
+
++ Integer range partitioned tables
+
+BigQuery allows partitioned tables based on a specific INTEGER column, 
+with your choice of start, end, and interval values. 
+
+To create an integer range partitioned table, you provide:
+
+    the column used to create the integer range partitions
+    the start of range partitioning (inclusive)
+    the end of range partitioning (exclusive)
+    the interval of each range within the partition
+
+Values that are outside of the range of the table go into the UNPARTITIONED partition.
+
+Both integer range partitioning and CLUSTERING can improve performance and reduce query cost. They have key differences and use cases.
+
+Use integer range partitioning if you want to:
+
+    Explicitly define the ranges used to partition the table. 
+    Know query cost before a query runs. 
+    Address a partition, such as when you want to load data to a specific partition
+
+Use clustering if you:
+
+    Do not care how the data will be clustered, 
+    as long as you get the potential performance improvement and cost reduction. 
+    BigQuery will automatically figure out how the data should be clustered for optimal performance and cost.
+
+    Need more than 4,000 partitions. 
+    BigQuery has a limit of 4,000 partitions for a partitioned table. 
+    There is no limit for the number of clusters in a table.
+
+Quotas and limits also apply to the different types of jobs you can run against partitioned tables, including:
+
+    Loading data (load jobs)
+    Exporting data (export jobs)
+    Querying data (query jobs)
+    Copying tables (copy jobs)
+
+Maximum number of partitions per partitioned table — 4,000
+Maximum number of partitions modified by a single job — 4,000
+Maximum number of partition modifications per ingestion time partitioned table — 5,000
+Maximum rate of partition operations — 50 partition operations every 10 seconds
+
+When you create and use partitioned tables in BigQuery, your charges are based on 
+    how much data is stored in the partitions 
+    the queries you run against the data
+
++ Creating and using ingestion-time partitioned tables
+
+After creating an ingestion-time partitioned table, you can:
+    Control access to your table data
+
+You can 
+    Creating an empty ingestion-time partitioned table with a schema definition
+    Creating an ingestion-time partitioned table from a query result
+    Creating an ingestion-time partitioned table when loading data
+    Converting date-sharded tables into ingestion-time partitioned tables
+
+You cannot assign access controls directly to tables or partitions. 
+You can control table access by configuring access controls at the dataset level or higher.
+
+Listing partitions in an ingestion-time partitioned table
+
+Standard SQL:
+SELECT
+  _PARTITIONTIME as pt
+FROM
+  `dataset.table`
+GROUP BY 1
+
+Legacy SQL:
+SELECT
+  partition_id
+FROM
+  [dataset.table$__PARTITIONS_SUMMARY__]
+
+
++ Creating and using date/timestamp partitioned tables
+
+Limitations
+
+Partitioned tables are subject to the following limitations:
+
+    The partitioning column must be either a scalar DATE or TIMESTAMP column. 
+    While the mode of the column may be REQUIRED or NULLABLE, it cannot be REPEATED (array-based).
+    
+    The partitioning column must be a top-level field. 
+    You cannot use a leaf field from a RECORD (STRUCT) as the partitioning column.
+    
+    You cannot use legacy SQL to query partitioned tables or to write query results to partitioned tables.
+
+You can 
+   Creating an empty partitioned table with a schema definition
+   Creating partitioned tables from query results
+   Creating a partitioned table when loading data
+
++ Creating and using integer range partitioned tables
+
+
+    The partitioning column must be an INTEGER column. 
+    While the mode of the column may be REQUIRED or NULLABLE, 
+    it cannot beREPEATED (array-based).
+    
+    The partitioning column must be a top-level field. 
+    You cannot use a leaf field from a RECORD (STRUCT) as the partitioning column.
+    
+    You cannot use legacy SQL to query partitioned tables or to write query results to partitioned tables.
+
+
++ Managing partitioned tables
+
+You can perform the following management tasks for partitioned tables:
+
+    Update a time-partitioned table's:
+        Description
+        Table expiration time
+        Partition expiration time
+        Partition filter requirements
+        Schema definition
+        Labels
+    Rename (copy) a time-partitioned table
+    Copy a time-partitioned table
+    Copy partitions
+    Delete a time-partitioned table
+    Delete partitions in a time-partitioned table
+
+If you specify a partition expiration when you create a table, the partition expiration overrides the dataset-level default partition expiration. 
+When you set a table-level partition expiration, all partitions are subject to the expiration. 
+You cannot apply different expiration times to individual partitions.
+
+If the partitioned table also has a table expiration configured, 
+the table and all the partitions in it are deleted according to the table expiration settings. 
+The table expiration takes precedence over the partition expiration.
+
++ Querying partitioned table data
+
+BigQuery supports two types of queries:
+
+    Interactive queries
+    Batch queries
+
+By default, BigQuery runs interactive queries, which means that the query is executed as soon as possible.
+BigQuery queues each batch query on your behalf and starts the query as soon as idle resources are available, usually within a few minutes.
+
++ Exporting table data
+
+You can export partitioned table data in CSV, JSON, or Avro format. 
+Currently, you must export data into a Cloud Storage bucket. 
+
++ Querying partitioned tables
+
+Caution: Some uses of the _PARTITIONTIME and _PARTITIONDATE pseudo columns do not limit the number of partitions scanned. 
+
+When you create an ingestion-time partitioned table, two pseudo columns are added to the table: 
+    _PARTITIONTIME 
+    _PARTITIONDATE
+
+_PARTITIONTIME and _PARTITIONDATE are available only in ingestion-time partitioned tables. 
+Partitioned tables do not have pseudo columns. 
+
+
++ _PARTITIONTIME
+
+The _PARTITIONTIME pseudo column contains a timestamp that is based on UTC time 
+To query the _PARTITIONTIME pseudo column, you must use an alias. 
+
+SELECT
+  _PARTITIONTIME AS pt,
+  column
+FROM
+  dataset.table
+
++ _PARTITIONDATE
+
+SELECT
+  _PARTITIONDATE AS pd,
+  column
+FROM
+  dataset.table
+
+When you query data in ingestion-time partitioned tables, 
+you reference specific partitions by specifying the values in the _PARTITIONTIME or _PARTITIONDATE pseudo columns
+
+    _PARTITIONTIME BETWEEN TIMESTAMP('2016-01-01') AND TIMESTAMP('2016-01-02')
+    _PARTITIONDATE BETWEEN '2016-01-01' AND '2016-01-02'
+
+Partition pruning is the mechanism BigQuery uses to eliminate unnecessary partitions from the input scan.
+The pruned partitions are not included when calculating the bytes scanned by the query, 
+reducing the on-demand analysis cost. 
+In general, partition pruning will reduce query cost when the filters can be evaluated at the outset of the query without requiring any subquery evaluations or data scans.
+
+++ Better performance with pseudo columns
+
+To improve query performance, use the _PARTITIONTIME pseudo column by itself on the left side of a comparison. 
+
+SELECT
+  field1
+FROM
+  dataset.table1
+WHERE
+  _PARTITIONTIME > TIMESTAMP_SUB(TIMESTAMP('2016-04-15'), INTERVAL 5 DAY)
+
+Because the queries process the same amount of data, the number of bytes billed is the same in both cases.
+
+In addition to using the pseudo columns to limit the number of partitions scanned during a query, you can also use the pseudo columns to query a range of partitioned tables using a wildcard table.
+
+SELECT
+  field1,
+  field2,
+  field3
+FROM
+  `my_dataset.mytable_*`
+WHERE
+  _TABLE_SUFFIX = 'id1'
+  AND _PARTITIONTIME = TIMESTAMP('2017-01-01')
+
+Complex queries that require the evaluation of multiple stages of a query in order to resolve the predicate (such as inner queries or subqueries) will not prune partitions from the query.
+
+SELECT
+  t1.name,
+  t2.category
+FROM
+  table1 t1
+INNER JOIN
+  table2 t2
+ON
+  t1.id_field = t2.field2
+WHERE
+  t1.ts = (SELECT timestamp from table3 where key = 2)

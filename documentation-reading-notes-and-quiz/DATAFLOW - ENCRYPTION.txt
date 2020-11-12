@@ -1,0 +1,9 @@
+This page describes how to use a Cloud Key Management Service (Cloud KMS) encryption key with Dataflow. 
+A customer-managed encryption key (CMEK) enables encryption of data at rest with a key that you can control through Cloud KMS. 
+You can create a batch or streaming pipeline that is protected with a CMEK or access CMEK-protected data in sources and sinks.
+
++ Create a pipeline that is protected by Cloud KMS
+
+When you create a batch or streaming pipeline, you can select a Cloud KMS key to encrypt the pipeline state. 
+The pipeline state is the data that is stored by Dataflow in temporary storage.
+

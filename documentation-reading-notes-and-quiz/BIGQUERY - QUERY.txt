@@ -1,0 +1,95 @@
+BigQuery supports two types of queries:
+
+    Interactive queries
+    Batch queries
+
+By default, BigQuery runs interactive queries, which means that the query is executed as soon as possible.
+
+BigQuery queues each batch <query> on your behalf and starts the query as soon as <idle resources> are available, usually within a few minutes.
+
+
++ Query jobs
+
+Jobs are actions that BigQuery runs on your behalf to 
+    	load
+	export
+	query
+	copy 
+data. 
+
+jobs can potentially take a long time to complete
+they execute asynchronously
+
++ Pricing:
+
+Query pricing refers to the cost of running your 
+	SQL commands 
+	user-defined
+
+BigQuery charges for queries by using one metric: 
+	the NUMBER OF BYTES processed
+
+whether the data is stored in BigQuery or in an external data source.
+
+
+The first 1 TB of data processed per month is free of charge
+
+Beyond your first 1 TB of data processed in a month, you are charged according to the On-demand pricing model.
+
+Query results are always saved to either a temporary or permanent table.
+
+batch queries: If BigQuery hasn't started the query within 24 hours, BigQuery changes the job priority to interactive.
+
++ dry run
+
+When you run a query in the CLI, you can use the 
+
+	--dry_run flag 
+
+to estimate the number of bytes read by the query.
+You can use the estimate returned by the dry run to calculate query costs in the pricing calculator.
+You are not charged for performing the dry run.
+
++ Temporary and permanent tables
+
+Tempory
+	A temporary table is a randomly named table saved in a special dataset. 
+	Temporary tables are used to cache query results. 
+	A temporary table has a lifetime of approximately 24 hours. 
+	Temporary tables are not available for sharing. 
+	You are not charged for storing temporary tables.
+
+Permanent
+	A permanent table can be a new or existing table in any dataset to which you have access. 
+	If you write query results to a new table, you are charged for storing the data.
+
+Destination table write preference section, choose one of the following:
+
+    Write if empty — Writes the query results to the table only if the table is empty.
+    Append to table — Appends the query results to an existing table.
+    Overwrite table — Overwrites an existing table with the same name using the query results
+
++ Downloading and saving
+
+After you run a SQL query, you can download/save the results to 
+	a file on your local machine, 
+	Google Drive or Google Sheets, 
+	a permanent table in BigQuery.
+
+You can download query results locally only in CSV or newline-delimited JSON format.
+
+You cannot download query results containing nested and repeated data in CSV format.
+
+To specify a named parameter, use the 
+	@ character 
+followed by an identifier, such as 
+	@param_name.
+
+Queries that are saved or shared contain only the query itself, which means that:
+
+    A shared query provides the query text only. You still need to have appropriate access to query the data. 
+    One advantage of saving only the query text is that you can share a query that is incomplete, 
+    even if it isn't a valid query, and use it as a template that other users can complete or customize.
+
+    The only query option retained by a saved query is the "SQL Version", 
+    which governs whether the query uses legacy SQL or standard SQL.

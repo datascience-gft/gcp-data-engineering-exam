@@ -1,0 +1,7 @@
+BigQuery automatically encrypts all data before it is written to disk. 
+
+The data is automatically decrypted when read by an authorized user. 
+
+By default, Google manages the key encryption keys used to protect your data. 
+
+You can also use customer-managed encryption keys, and encrypt individual values within a table.

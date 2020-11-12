@@ -1,0 +1,93 @@
+basic questions:
+
+    Where is your input data stored? How many sets of input data do you have? 
+	This will determine what kinds of Read transforms you'll need to apply at the start of your pipeline.
+    
+    What does your data look like? 
+	It might be plaintext, formatted log files, or rows in a BigQuery table, for example. 
+	Some Dataflow transforms work exclusively on PCollections of key/value pairs; 
+	you'll need to determine if and how your data is keyed and 
+	how to best represent that in your pipeline's PCollection(s).
+
+    What do you want to do with your data? 
+	The core transforms in the Dataflow SDKs are general purpose, 
+	and knowing how you need to change or manipulate your data 
+	will determine how you build core transforms like ParDo, 
+	or when you use pre-written transforms included with the Dataflow SDKs.
+
+    What does your output data look like, and where should it go? 
+	This will determine what kinds of Write transforms you'll need to apply at the end of your pipeline.
+
+
++ A basic pipeline
+
+The simplest pipelines represent a linear flow of operations, as shown in Figure 1 below:
+
+Input -Transform-> PCollection -Transform-> PCollection -Transform-> Output 
+
+A pipeline represents a Directed Acyclic Graph of steps. 
+
+It can have multiple input sources, 
+multiple output sinks, 
+and its operations (transforms) can output multiple PCollections.
+
++ Branching PCollections
+
+It's important to understand that <transforms> do not consume PCollections; 
+instead, they consider each individual element of a PCollection and create a new PCollection as output. 
+This way, you can do different things to different elements in the same PCollection.
+
++ Multiple transforms process the same PCollection
+
+You can use the same PCollection as input for multiple transforms without consuming the input or altering it.
+
+The pipeline illustrated in Figure 2 below reads its input, first names (Strings), from a single source, 
+Google BigQuery, 
+and creates a PCollection of BigQuery table rows. 
+
+Then, the pipeline applies multiple transforms to the same PCollection. 
+Transform A, ParDo, extracts all the names in that PCollection that start with the letter 'A', 
+and Transform B, ParDo, extracts all the names in that PCollection that start with the letter 'B'. 
+
+Both transforms A and B have the same input PCollection.
+
++ A single transform that uses side outputs
+
+Another way to branch a pipeline is to have a single transform output to multiple PCollections 
+by using side outputs. 
+
+Transforms that use side outputs, process each element of the input once, and allow you to <<output>> to zero or more <<additional>>> PCollections.
+
+Figure 3 below illustrates the same example described above, but with one transform that uses a side output; 
+Names that start with 'A' are added to the output PCollection, 
+and names that start with 'B' are added to the side output PCollection.
+
++ Merging PCollections
+
+Often, after you've branched your PCollection into multiple PCollections via multiple transforms, you'll want to merge some or all of those resulting PCollections back together. You can do so by using one of the following:
+
+    Flatten - 
+	You can use the <Flatten transform> in the Dataflow SDK to merge multiple PCollections <<of the same type>>.
+
+    Join - 
+	You can use the CoGroupByKey transform in the Dataflow SDK to perform 
+	a relational join between two PCollections. 
+
+The example depicted in Figure 4 below is a continuation of the example illustrated in Figure 2 in the section above. 
+After branching into two PCollections, 
+one with names that begin with 'A' and one with names that begin with 'B', 
+the pipeline merges the two together into a single PCollection 
+that now contains all names that begin with either 'A' or 'B'. 
+Here, it makes sense to use Flatten because the PCollections being merged both contain the same type. 
+
++ Multiple sources
+
+Your pipeline can read its input from one or more sources. 
+If your pipeline reads from multiple sources and the data from those sources is related, 
+it can be useful to join the inputs together. 
+
+In the example illustrated in Figure 5 below, the pipeline reads names and addresses from BigQuery, 
+and names and order numbers from Google Cloud Storage. 
+
+The pipeline then uses CoGroupByKey to join this information, where the key is the name; 
+the resulting PCollection contains all the combinations of names, addresses, and orders.

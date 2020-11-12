@@ -1,0 +1,20 @@
+A Pub/Sub subscription can be configured to send all messages as an HTTP POST requests to a webhook, a push endpoint, URL. 
+
+In general, the push endpoint must be 
+    a publicly accessible HTTPS server, 
+    presenting a valid SSL certificate signed by a certificate authority 
+    routable by DNS. 
+
+Pub/Sub will push messages to the subscription from each region where messages are published on the subscription's topic.
+
+In addition, push subscriptions can be configured to provide an authorization header to allow the endpoints to authenticate the requests. 
+
+Automatic authentication and authorization mechanisms are available for App Engine Standard and Cloud Functions endpoints hosted in the same project as the subscription.
+
++ Receiving push messages
+
+For push subscriptions, Pub/Sub does not send a negative acknowledgment (sometimes known as a nack). 
+
+If your webhook does not return a success code, Pub/Sub retries delivery until the message expires after the subscription's message retention period. 
+
+You can configure a default acknowledgment deadline for push subscriptions. However, unlike for pull subscriptions, the deadline cannot be extended for individual messages. The deadline is effectively the amount of time the endpoint has to respond to the push request.

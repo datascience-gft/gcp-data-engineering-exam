@@ -1,0 +1,110 @@
+After you construct and test your Apache Beam pipeline, you can use the Dataflow managed service to deploy and execute it. 
+Once on the Dataflow service, your pipeline code becomes a Dataflow job.
+
+The Dataflow service fully manages Google Cloud services such as Compute Engine and Cloud Storage to run your Dataflow job, automatically spinning up and tearing down the necessary resources. 
+
+In addition to managing Google Cloud resources, the Dataflow service automatically performs and optimizes many aspects of distributed parallel processing. These include:
+
+    Parallelization and Distribution. 
+    	Dataflow automatically partitions your data and distributes your worker code to Compute Engine instances for parallel processing.
+
+    Optimization. 
+	Dataflow uses your pipeline code to create <an execution graph> that represents your pipeline's PCollections and transforms, and optimizes the graph for the most efficient performance and resource usage. Dataflow also automatically optimizes potentially costly operations, such as data aggregations.
+
+    Automatic Tuning features. 
+	The Dataflow service includes several features that provide on-the-fly adjustment of resource allocation and data partitioning, such as Autoscaling and Dynamic Work Rebalancing. These features help the Dataflow service execute your job as quickly and efficiently as possible.
+
+
++ Pipeline lifecycle: from pipeline code to Dataflow job
+
+When you run your Dataflow program, Dataflow creates an execution graph from the code that constructs your Pipeline object, including all of the transforms and their associated processing functions (such as DoFns). 
+This phase is called Graph Construction Time. 
+During graph construction, Dataflow checks for various errors and ensures that the your pipeline graph doesn't contain any illegal operations. 
+The execution graph is translated into JSON format, and the JSON execution graph is transmitted to the Dataflow service endpoint.
+
+When the graph is validated, it becomes a <<<job>>> on the Dataflow service. 
+
++ Execution graph
+
+Dataflow builds a graph of steps that represents your pipeline, based on the transforms and data you used when you constructed your Pipeline object. This is the pipeline execution graph.
+
+The WordCount example, included with the Apache Beam SDKs, contains a series of transforms to read, extract, count, format, and write the individual words in a collection of text, along with an occurrence count for each word.
+
++ Parallelization and distribution
+
+The Dataflow service automatically parallelizes and distributes the processing logic in your pipeline to the workers you've allotted to perform your job. 
+Dataflow uses the abstractions in the programming model to represent parallel processing functions; for example, your ParDo transforms cause Dataflow to automatically distribute your processing code (represented by DoFns) to multiple workers to be run in parallel.
+
++ Error and exception handling
+
+Your pipeline may throw exceptions while processing data. 
+Some of these errors are 
+	transient (e.g., temporary difficulty accessing an external service), 
+	some are permanent, such as errors caused by corrupt or unparseable input data, or null pointers during computation.
+
+Dataflow processes elements in arbitrary bundles, and retries the complete bundle when an error is thrown for any element in that bundle. 
+
+When running in <batch mode>, bundles including a failing item are retried 4 times. 
+The pipeline will fail completely when a single bundle has failed 4 times. 
+
+When running in <streaming mode>, a bundle including a failing item will be retried indefinitely, which may cause your pipeline to permanently stall.
+
++ Fusion optimization
+
+Once the JSON form of your pipeline's execution graph has been validated, the Dataflow service may modify the graph to perform optimizations. 
+Such optimizations can include fusing multiple steps or transforms in your pipeline's execution graph into single steps. 
+Fusing steps prevents the Dataflow service from needing to materialize every intermediate PCollection in your pipeline, which can be costly in terms of memory and processing overhead.
+
++ Autoscaling
+
+With autoscaling enabled, the Dataflow service automatically chooses the appropriate number of worker instances required to run your job. 
+The Dataflow service may also dynamically re-allocate more workers or fewer workers during runtime to account for the characteristics of your job. 
+Certain parts of your pipeline may be computationally heavier than others, and the Dataflow service may automatically spin up additional workers during these phases of your job
+
+You can disable autoscaling by specifying the flag --autoscalingAlgorithm=NONE when you run your pipeline; 
+if so, note that the Dataflow service sets the number of workers based on the --numWorkers option, 
+which defaults to 3.
+
+You might still cap the number of workers by specifying the --maxNumWorkers option when you run your pipeline.
+
+Dataflow scales based on the parallelism of a pipeline. 
+The parallelism of a pipeline is an estimate of the number of threads needed to most efficiently process data at any given time.
+
++ Batch autoscaling
+
+For batch pipelines, Dataflow automatically chooses the number of workers based on both the amount of work in each stage of your pipeline and the current throughput at that stage. 
+Dataflow determines how much data is being processed by the current set of workers and extrapolates how much time the rest of the work takes to process.
+
++ Streaming autoscaling
+
+Streaming autoscaling allows the Dataflow service to adaptively change the number of workers used to execute your streaming pipeline in response to changes in load and resource utilization. Streaming autoscaling is a free feature and is designed to reduce the costs of the resources used when executing streaming pipelines.
+
+Without autoscaling, you choose a fixed number of workers by specifying 
+	numWorkers or 
+	num_workers 
+to execute your pipeline. As the input workload varies over time, this number can become either too high or too low. Provisioning too many workers results in unnecessary extra cost, and provisioning too few workers results in higher latency for processed data. By enabling autoscaling, resources are used only as they are needed.
+
++ Jobs
+
+You may run up to 25 concurrent Dataflow jobs per Google Cloud project.
+
+The Dataflow service is currently limited to processing JSON job requests that are 20 MB in size or smaller. 
+
++ Workers
+
+The Dataflow service currently allows a maximum of 1000 Compute Engine instances per job. 
+The default machine type is 
+	n1-standard-1 for a batch job, 
+	and n1-standard-4 for streaming; 
+when using the default machine types, the Dataflow service can therefore allocate up to 4000 cores per job.
+
++ Persistent disk resources
+The Dataflow service is currently limited to 15 persistent disks per worker instance when running a streaming job. Each persistent disk is local to an individual Compute Engine virtual machine.
+
+For jobs running on worker VMs, the default size of each persistent disk is 
+	250 GB in batch mode 
+	400 GB in streaming mode.
+
++ Locations
+By default, the Dataflow service deploys Compute Engine resources in the us-central1-f zone of the us-central1 region. 
+You can override this setting by specifying the --region parameter. 

@@ -1,0 +1,38 @@
+Dataproc is a managed Spark and Hadoop service that lets you take advantage of open source data tools for 
+	batch processing, 
+	querying, 
+	streaming, 
+	machine learning. 
+
+Dataproc automation helps you to 
+	create clusters quickly, 
+	manage them easily, 
+	save money by turning clusters off when you don't need them. 
+
+With less time and money spent on administration, you can focus on your jobs and your data.
+
+When compared to traditional, on-premises products and competing cloud services, Dataproc has a number of unique advantages for clusters of three to hundreds of nodes:
+
+    Low cost — 
+	Dataproc is priced at only 1 cent per virtual CPU in your cluster per hour, on top of the other Cloud Platform resources you use. 
+	Dataproc clusters can include preemptible instances that have lower compute prices, reducing your costs even further. 
+	Instead of rounding your usage up to the nearest hour, Dataproc charges you only for what you really use with second-by-second billing and a low, one-minute-minimum billing period.
+
+    Super fast — 
+	Without using Dataproc, it can take from five to 30 minutes to create Spark and Hadoop clusters on-premises or through IaaS providers. 
+	By comparison, Dataproc clusters are quick to start, scale, and shutdown, with each of these operations taking 90 seconds or less, on average. 
+	This means you can spend less time waiting for clusters and more hands-on time working with your data.
+
+    Integrated — 
+	Dataproc has built-in integration with other Google Cloud Platform services, such as BigQuery, Cloud Storage, Cloud Bigtable, Stackdriver Logging, and Stackdriver Monitoring, so you have more than just a Spark or Hadoop cluster—you have a complete data platform. 
+	For example, you can use Dataproc to effortlessly ETL terabytes of raw log data directly into BigQuery for business reporting.
+
+    Managed — 
+	Use Spark and Hadoop clusters without the assistance of an administrator or special software. 
+	You can easily interact with clusters and Spark or Hadoop jobs through the Google Cloud Console, the Cloud SDK, or the Dataproc REST API. 
+	When you're done with a cluster, you can simply turn it off, so you don’t spend money on an idle cluster. 
+	You won’t need to worry about losing data, because Dataproc is integrated with Cloud Storage, BigQuery, and Cloud Bigtable.
+
+    Simple and familiar — 
+	You don’t need to learn new tools or APIs to use Dataproc, making it easy to move existing projects into Dataproc without redevelopment. 
+	Spark, Hadoop, Pig, and Hive are frequently updated, so you can be productive faster.

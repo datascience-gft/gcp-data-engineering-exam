@@ -1,0 +1,22 @@
+There are two possible commands you can issue to stop your job: 
+	Cancel 
+	Drain
+
++ Cancel
+
+Using the Cancel option to stop your job tells the Dataflow service to cancel your job immediately. 
+The service will halt all data ingestion and processing as soon as possible and immediately begin cleaning up the Google Cloud resources attached to your job. 
+These resources may include shutting down Compute Engine worker instances and closing active connections to I/O sources or sinks.
+
+Because Cancel immediately halts processing, you may lose any "in-flight" data. 
+"In-flight" data refers to data that has been read but is still being processed by your pipeline. 
+Data written from your pipeline to an output sink before you issued the Cancel command may still be accessible on your output sink.
+
++ Drain
+
+Draining batch pipelines is not supported.
+
+Using the Drain option to stop your job tells the Dataflow service to finish your job in its current state. Your job stops ingesting new data from input sources soon after receiving the drain request (typically within a few minutes). 
+However, the Dataflow service preserves any existing resources, such as worker instances, to finish processing and writing any buffered data in your pipeline. 
+
+When all pending processing and write operations are complete, the Dataflow service cleans up the Google Cloud resources associated with your job.

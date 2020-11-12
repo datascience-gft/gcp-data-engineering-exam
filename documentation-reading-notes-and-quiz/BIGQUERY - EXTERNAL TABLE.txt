@@ -1,0 +1,65 @@
+An external data source 
+	(also known as a federated data source) 
+is a data source that you can query directly even though the data is not stored in BigQuery. 
+
+Instead of loading or streaming the data, you create a table that references the external data source.
+
+BigQuery offers support for querying data directly from:
+
+    Bigtable
+    Cloud Storage
+    Google Drive
+
+Use cases for external data sources include:
+
+    Loading and cleaning your data in one pass by querying the data from an external data source 
+    (a location external to BigQuery) and writing the cleaned result into BigQuery storage.
+
+    Having a small amount of frequently changing data that you join with other tables. 
+    As an external data source, the frequently changing data does not need to be reloaded every time it is updated.
+
++ limitations
+
+	BigQuery does not guarantee data consistency for external data sources. 
+	Changes to the underlying data while a query is running can result in unexpected behavior
+
+	Query performance for external data sources may not be as high as querying data in a native BigQuery table. 	If query speed is a priority, load the data into BigQuery instead of setting up an external data source. 
+	The performance of a query that includes an external data source depends on the external storage type. 
+	For example, querying data stored in Cloud Storage is faster than querying data stored in Google Drive. 
+
+	You cannot run a BigQuery job that exports data to an external data source.
+
+	You cannot reference an external data source in a wildcard table query.
+
+	External data sources do not support table partitioning or clustering.
+
+	When you query an external data source, the results are not cached.
+	You are charged for each query against an external table even if you issue the same query multiple times. 
+	If you need to repeatedly issue a query against an external table that does not change frequently, 
+	consider writing the query results to a permanent table 
+	and run the queries against the permanent table instead.
+
+	You are limited to 4 concurrent queries against a Cloud Bigtable external data source.
+
++ Location considerations
+
+	Colocate your BigQuery dataset and your external data source.
+		When you query data in an external data source such as Cloud Storage, 
+		the data you're querying must be in the same location as your BigQuery dataset.
+
+
+To manually move a dataset from one location to another, follow this process:
+
+    1. Export the data from your BigQuery tables to a regional or multi-region Cloud Storage bucket 
+    in the same location as your dataset. 
+    There are no charges for exporting data from BigQuery, 
+    but you do incur charges for storing the exported data in Cloud Storage. 
+    BigQuery exports are subject to the limits on export jobs.
+
+    2. Copy or move the data from your Cloud Storage bucket to a regional or multi-region bucket in the new location. 
+
+    3. After you transfer the data to a Cloud Storage bucket in the new location, create a new BigQuery dataset 
+    (in the new location). Then, load your data from the Cloud Storage bucket into BigQuery.
+    You are not charged for loading the data into BigQuery, 
+    but you will incur charges for storing the data in Cloud Storage until you delete the data or the bucket. 
+    You are also charged for storing the data in BigQuery after it is loaded.

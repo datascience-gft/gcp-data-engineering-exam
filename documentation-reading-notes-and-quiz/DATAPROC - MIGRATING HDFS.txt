@@ -1,0 +1,100 @@
++ Planning your data move
+
+The following sections describe best practices for planning your data migration from on-premises HDFS to Google Cloud. Plan to migrate incrementally so you can leave time to migrate jobs,experiment, and test after moving each body of data.
+
++ Deciding how to move your data
+
+There are two different migration models you should consider for transferring HDFS data to the cloud: 
+	push and pull. 
+
+Both models use Hadoop DistCp to copy data from your on-premises HDFS clusters to Cloud Storage, but they use different approaches.
+
++ PUSH
+
+The push model is the simplest model: the source cluster runs the distcp jobs on its data nodes and pushes files directly to Cloud Storage, 
+
++ PULL
+
+The pull model is more complex, but has some advantages. An ephemeral Dataproc cluster runs the distcp jobs on its data nodes, pulls files from the source cluster, and copies them to Cloud Storage.
+
+
+The push model is the simplest model because the source cluster can push data directly to Cloud Storage and you don't need to create extra compute resources to perform the copy. However, if you intend to continue using the source cluster during the migration for other regular data processing jobs, you should ensure that enough resources, such as CPU, RAM, and network bandwidth, are available on the source cluster to also perform the copy jobs.
+
+If the source cluster is already running at compute capacity, and if you cannot increase the resources on the source cluster to perform the copy, then you should consider using the pull model instead.
+
+
+While more complex than the push model, the pull model has a number of advantages:
+
+    Impact on the source cluster's CPU and RAM resources is minimized, because the source nodes are used only for serving blocks out of the cluster. You can also fine-tune the specifications of the pull cluster's resources on Google Cloud to handle the copy jobs, and tear down the pull cluster when the migration is complete.
+    Traffic on the source cluster's network is reduced, which allows for higher outbound bandwidths and faster transfers.
+    There is no need to install the Cloud Storage connector on the source cluster as the ephemeral Dataproc cluster, which already has the connector installed, handles the data transfer to Cloud Storage.
+
+To understand the implications for network usage for both models, consider how Hadoop handles data replication in HDFS. Hadoop splits each file into multiple blocks — the block size is usually 128-256 megabytes. Hadoop replicates those blocks across multiple data nodes and across multiple racks to avoid losing data in the event of a data node failure or a rack failure. The standard configuration is to store 3 replicas of each block.
+
+
++ Moving data to products other than Cloud Storage
+
+Move most of your data to Cloud Storage. However, there are some cases where you might consider moving data to a different Google Cloud product:
+
+    If you are migrating data from Apache HBase, consider moving it to Cloud Bigtable, which provides equivalent features.
+
+    If you are migrating data from Apache Impala, consider moving it to BigQuery, which provides equivalent features.
+
+You might have data in HBase or Impala that you can use without storing it in Bigtable or BigQuery. If your job doesn't require the features of Bigtable or BigQuery, store the data in Cloud Storage.
+
++ Planning an incremental move
+
+Plan on moving your data in discrete chunks over time. Schedule plenty of time to move the corresponding jobs to the cloud between data moves. Start your migration by moving low-priority data, such as backups and archives.
+
+
++ Splitting your data
+
+If you plan to move your data incrementally, you must split your data into multiple parts. The following sections describe the most common strategies for splitting datasets.
+
++ Splitting data by timestamp
+
+A common approach to splitting data for an incremental move is to store older data in the cloud, while keeping your new data in HDFS in your on-premises system. This enables you to test new and migrated jobs on older, less critical data. Splitting your data in this way enables you to start your move with small amounts of data.
+
++ Splitting data by jobs
+
+Sometimes you can split your data by looking at the jobs that use it. This can be especially helpful if you are migrating jobs incrementally. You can move just the data that is used by the jobs that you move.
+
++ Splitting data by ownership
+
+In some cases, you can split your data by areas of ownership. One advantage of taking this approach is that your data organization aligns with the organization of your business. Another advantage is that it allows you to leverage Google Cloud role-based access management. For example, migrating data used by a particular business role to an isolated Cloud Storage bucket makes it easier to set up permissions.
+
++ Keeping your data synchronized in a hybrid solution
+
+One of the challenges of using a hybrid solution is that sometimes a job needs to access data from both Google Cloud and from on-premises systems. If a dataset must be accessed in both environments, you need to establish a primary storage location for it in one environment and maintain a synchronized copy in the other.
+
+The challenges of synchronizing data are similar, regardless of the primary location you choose. You need a way to identify when data has changed and a mechanism to propagate changes to the corresponding copies. If there is a potential for conflicting changes, you also need to develop a strategy for resolving them.
+
+Important considerations:
+
+    Always make copies of data read-only if possible. Your synchronization strategy becomes more complex with every potential source of new edits.
+    In a hybrid solution, avoid maintaining more than two copies of data. Keep only one copy on premises and only one in Google Cloud.
+
+You can use technologies such as Apache Airflow to help manage your data synchronization.
+
++ Configuring access to your data
+
+File permissions work differently on Cloud Storage than they do for HDFS. Before you move your data to Cloud Storage, you need to become familiar with Cloud Identity and Access Management (Cloud IAM).
+
+The easiest way to handle access control is to sort data into Cloud Storage buckets based on access requirements and configure your authorization policy at the bucket level. You can assign roles that grant access to individual users or to groups. Grant access by groups, and then assigning users to groups as needed. You need to make data access decisions as you import and structure your data in Cloud Storage.
+
+Every Google Cloud product has its own permissions and roles. Make sure you understand the relationships between Cloud Storage access controls and those for Dataproc. Evaluate the policies for each product separately. Don't assume that the roles and permissions map directly between products.
+
+Familiarize yourself with the following documentation to prepare for making policy decisions for your cloud-based Hadoop system:
+
+    Overview of Cloud IAM for Cloud Storage
+    List of Dataproc permissions and IAM roles
+
+If you need to assign more granular permissions to individual files, Cloud Storage supports access control lists (ACLs). However, Cloud IAM is the strongly preferred option. Only use ACLs if your permissions are particularly complex.
+
++ Using DistCp to copy your data to Cloud Storage
+
+Because Cloud Storage is a Hadoop compatible file system, you can use Hadoop DistCp to move your data from your on-premises HDFS to Cloud Storage. You can move data several ways using DistCp.
+
++ Validating data transfers
+
+When you're copying or moving data between distinct storage systems such as multiple HDFS clusters or between HDFS and Cloud Storage, it's a good idea to perform some type of validation to guarantee data integrity. This validation is essential to be sure data wasn't altered during transfer. For more details, refer to the guide on Validating data transfers.

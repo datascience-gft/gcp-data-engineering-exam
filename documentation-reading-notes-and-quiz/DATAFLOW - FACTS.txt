@@ -1,0 +1,212 @@
+Dataflow is a 
+	<<fully managed>> 
+	streaming analytics 
+service, 
+that minimizes latency, processing time, and cost through 
+	autoscaling 
+	batch 
+processing.
+
+<Horizontal autoscaling> of worker resources for optimum throughput results in better overall price-to-performance.
+
+Flexible resource scheduling pricing for batch processing, such as overnight jobs
+
+Automated resource management and dynamic work rebalancing
+
+Built on the autoscaling infrastructure of Dataflow along with Pub/Sub and BigQuery, 
+	Ingest --> Pub/Sub --> Dataflow --> BigQuery
+
+our <streaming solution> provisions the resources you need to ingest, process, and analyze fluctuating volumes of real-time data for real-time business insights. 
+
+<Autoscaling> lets the Dataflow service automatically choose the appropriate number of worker instances required to run your job.
+
+
+The Apache Beam SDK 
+
+is an open source <<<<programming model>>>> for data pipelines.  
+can choose a runner, such as Dataflow, to execute your pipeline. 
+
+The simplest pipelines represent a linear flow of operations, as shown in Figure 1 below:
+
+Input -Transform-> PCollection -Transform-> PCollection -Transform-> Output 
+
+A pipeline represents a Directed Acyclic Graph of steps. 
+
+It can have multiple input sources, 
+multiple output sinks, 
+and its operations (transforms) can output multiple PCollections.
+
+Transforms that use side outputs, process each element of the input once, and allow you to <<output>> to zero or more <<additional>>> PCollections.
+
++ Branching PCollections
++ Multiple transforms process the same PCollection
++ A single transform that uses side outputs
++ Merging PCollections
+
+Often, after you've branched your PCollection into multiple PCollections via multiple transforms, you'll want to merge some or all of those resulting PCollections back together. You can do so by using one of the following:
+
+    Flatten - 
+	You can use the <Flatten transform> in the Dataflow SDK to merge multiple PCollections <<of the same type>>.
+
+    Join - 
+	You can use the CoGroupByKey transform in the Dataflow SDK to perform 
+	a relational join between two PCollections. 
+
++ Creating Your Pipeline Object
+// Start by defining the options for the pipeline.
+PipelineOptions options = PipelineOptionsFactory.create();
+// Then create the pipeline.
+Pipeline p = Pipeline.create(options);
+
+Pipeline Options
+    Where your pipeline runs
+    Where your pipeline job stages files
+    Which Cloud Platform project your pipeline is associated with
+    How many Compute Engine instances your pipeline uses as workers
+
++ Reading Data Into Your Pipeline
+PCollection<String> lines = p.apply(
+  TextIO.Read.named("ReadMyFile").from("gs://some/inputData.txt"));
+
+There are two kinds of root transforms in the Dataflow Java SDK: Read and Create. 
+	Read transforms: read data from an external source, such as BigQuery or a text file in Google Cloud Storage. 
+	Create transforms: create a PCollection from an in-memory java.util.Collection.
+
++ Applying Transforms to Process Pipeline Data
+
+These include general-purpose <core transforms>, such as ParDo or Combine. 
+
++ Writing or Outputting Your Final Pipeline Data
+
+Write transforms can output the elements of a PCollection to an external data sink, 
+such as a file in Google Cloud Storage or a BigQuery table. 
+
+PCollection<String> filteredWords = ...;
+filteredWords.apply(TextIO.Write.named("WriteMyFile").to("gs://some/outputData.txt"));
+
++ Running Your Pipeline
+p.run();
+
+Pipelines are executed asynchronously
+
+The monitoring interface can show you:
+
+    A list of all currently running Dataflow jobs and previously run jobs within the last 30 days.
+
+The execution graph is translated into JSON format, and the JSON execution graph is transmitted to the Dataflow service endpoint.
+
+Dataflow uses the abstractions in the programming model to represent parallel processing functions; for example, your ParDo transforms cause Dataflow to automatically distribute your processing code (represented by DoFns) to multiple workers to be run in parallel.
+
+When running in <batch mode>, bundles including a failing item are retried 4 times. 
+The pipeline will fail completely when a single bundle has failed 4 times. 
+
+When running in <streaming mode>, a bundle including a failing item will be retried indefinitely, which may cause your pipeline to permanently stall.
+
+<Fusing steps> prevents the Dataflow service from needing to materialize every intermediate PCollection in your pipeline, which can be costly in terms of memory and processing overhead.
+
+You can disable autoscaling by specifying the flag --autoscalingAlgorithm=NONE when you run your pipeline; 
+if so, note that the Dataflow service sets the number of workers based on the --numWorkers option, 
+which defaults to 3.
+
+You might still cap the number of workers by specifying the --maxNumWorkers option when you run your pipeline.
+
+Streaming autoscaling is a free feature and is designed to reduce the costs of the resources used when executing streaming pipelines.
+
+Without autoscaling, you choose a fixed number of workers by specifying 
+	numWorkers or 
+	num_workers 
+to execute your pipeline.
+
+You may run up to 25 concurrent Dataflow jobs per Google Cloud project.
+
+The Dataflow service currently allows a maximum of 1000 Compute Engine instances per job. 
+The default machine type is 
+	    n1-standard-1 for a batch job, 
+	and n1-standard-4 for streaming; 
+when using the default machine types, the Dataflow service can therefore allocate up to 4000 cores per job.
+
+The Dataflow service is currently limited to 15 persistent disks per worker instance when running a streaming job.
+
+the default size of each persistent disk is 
+	250 GB in batch mode 
+	400 GB in streaming mode.
+
+By default, the Dataflow service deploys Compute Engine resources in the us-central1-f zone of the us-central1 region. 
+
+When you update a job on the Dataflow service, you replace the existing job with a new job that runs your updated pipeline code. 
+The Dataflow service retains the job name, but runs the replacement job with an updated Job ID.
+
+The replacement job preserves any intermediate state data from the prior job, as well as any buffered data records or metadata currently "in-flight" from the prior job. 
+
+    Pass the --update option.
+    Set the --jobName option in PipelineOptions to the same name as the job you want to update.
+    If any transform names in your pipeline have changed, you must supply a transform mapping and pass it using the --transformNameMapping option.
+
+Adding side inputs to or removing them from a transform in your replacement pipeline will cause the compatibility check to fail.
+
+If the replacement job uses different or incompatible data encoding, the Dataflow service will not be able to serialize or deserialize these records.
+
+There are two possible commands you can issue to stop your job: 
+	Cancel 
+	Drain
+
+Using the Cancel option to stop your job tells the Dataflow service to cancel your job immediately.
+
+"In-flight" data refers to data that has been read but is still being processed by your pipeline. 
+
+Draining batch pipelines is not supported.
+
+Your job stops ingesting new data from input sources soon after receiving the drain request (typically within a few minutes). 
+However, the Dataflow service preserves any existing resources, such as worker instances, to finish processing and writing any buffered data in your pipeline. 
+
++ A Shared VPC network 
+
+is one that exists in a separate project, called a host project, within your organization.
+
++ VPC Service Controls
+
+Dataflow VPC Service Controls provide additional security for your pipeline's resources and services.
+
+A customer-managed encryption key (CMEK) enables encryption of data at rest with a key that you can control through Cloud KMS. 
+You can create a batch or streaming pipeline that is protected with a CMEK or access CMEK-protected data in sources and sinks.
+
++ Create a pipeline that is protected by Cloud KMS
+
+When you create a batch or streaming pipeline, you can select a Cloud KMS key to encrypt the pipeline state. 
+The pipeline state is the data that is stored by Dataflow in temporary storage.
+
++ ParDo
+    ParDo is the core parallel processing operation in the Apache Beam SDKs, invoking a user-specified function on each of the elements of the input PCollection. ParDo collects the zero or more output elements into an output PCollection. The ParDo transform processes elements independently and possibly in parallel.
+
++ Pipeline I/O
+    Apache Beam I/O connectors let you read data into your pipeline and write output data from your pipeline. An I/O connector consists of a source and a sink. All Apache Beam sources and sinks are transforms that let your pipeline work with data from several different data storage formats. You can also write a custom I/O connector.
+
++Unbounded PCollections
+
+or unbounded collections, represent data in streaming pipelines. 
+An unbounded collection contains data from a continuously updating data source such as Pub/Sub.
+
+
++ Windows and windowing functions
+
+Windowing functions divide unbounded collections into logical components, or windows. 
+Windowing functions group unbounded collections by the timestamps of the individual elements. 
+Each window contains a finite number of elements.
+
+
++ Tumbling windows
+
+A tumbling window represents a consistent, <<<disjoint>>> time interval in the data stream.
+
+
++ Hopping windows
+
+A hopping window represents a consistent time interval in the data stream. Hopping windows can overlap, whereas tumbling windows are disjoint.
+
++ Session windows
+
+A session window contains elements within a gap duration of another element. The gap duration is an interval between new data in a data stream. If data arrives after the gap duration, the data is assigned to a new window.
+
+Dataflow 
+compliments Pub/Sub's scalable, at-least-once <delivery> model 
+with message deduplication and exactly-once, in-order <processing> if you use windows and buffering.

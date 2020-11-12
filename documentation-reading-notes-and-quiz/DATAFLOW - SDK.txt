@@ -1,0 +1,20 @@
+The Apache Beam SDK 
+
+is an open source <<<<programming model>>>> for data pipelines. 
+
+You define these pipelines with an Apache Beam program 
+
+and can choose a runner, such as Dataflow, to execute your pipeline. 
+
++ Java
+
+To obtain the Apache Beam SDK for Java using Maven, use one of the released artifacts from the Maven Central Repository.
+
+Add a dependency in your pom.xml file and specify a version range for the SDK artifact as follows:
+
+  <dependency>
+  <groupId>org.apache.beam</groupId>
+  <artifactId>beam-sdks-java-core</artifactId>
+  <version>[2.19.0, 2.99)</version>
+  </dependency>
+  

@@ -1,0 +1,40 @@
+Pub/Sub Seek lets users replay and reprocess previously acknowledged messages or to acknowledge messages in bulk.
+
+Pub/Sub is a scalable, durable event ingestion and delivery system. 
+
+Dataflow 
+compliments Pub/Sub's scalable, at-least-once <delivery> model 
+with message deduplication and exactly-once, in-order <processing> if you use windows and buffering.
+
+Pub/Sub and Dataflow integration features
+
+Apache Beam provides a reference I/O source implementation 
+	(PubSubIO) 
+for Pub/Sub (Java and Python), which is used by non-Dataflow runners (such as the Apache Spark runner, Apache Flink runner, and the direct runner).
+
+However, the Dataflow runner uses a different, private implementation of PubSubIO. 
+
+This implementation takes advantage of Google Cloud-internal APIs and services to offer three main advantages: 
+	low latency watermarks, 
+	high watermark accuracy (and therefore data completeness), 
+	efficient deduplication. 
+
++ Building streaming pipelines with Pub/Sub
+
+    Use existing streaming pipeline example code from the Apache Beam GitHub repo, such as streaming word extraction (Java) and streaming wordcount (Python).
+
+    Write a new pipeline using the Apache Beam API reference (Java or Python).
+
+    Use Google-provided Dataflow templates and the corresponding template source code in Java.
+
+    Google provides a set of Dataflow templates that offer a UI-based way to start Pub/Sub stream processing pipelines. If you use Java, you can also use the source code of these templates as a starting point to create a custom pipeline.
+
+    The following streaming templates export Pub/Sub data to different destinations:
+        Pub/Sub Subscription to BigQuery
+        Pub/Sub to Pub/Sub relay
+        Pub/Sub to Cloud Storage Avro
+        Pub/Sub to Cloud Storage Text
+        Storage Text to Pub/Sub (Stream)
+
+    The following batch template imports a stream of data into a Pub/Sub topic:
+        Cloud Storage Text to Pub/Sub (Batch)

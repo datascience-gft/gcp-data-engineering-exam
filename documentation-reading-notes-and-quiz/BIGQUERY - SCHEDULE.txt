@@ -1,0 +1,38 @@
+You can schedule queries to run on a recurring basis. 
+
+Scheduled queries must be written in <<standard SQL>>, which can include 
+	Data Definition Language (DDL) 
+	Data Manipulation Language (DML) 
+statements. 
+
+The query string and destination table can be parameterized, 
+allowing you to organize query results by date and time.
+
+Before you create a scheduled query:
+
+    Scheduled queries use features of the BigQuery Data Transfer Service.
+
+Query string
+
+The query string must be valid and written in standard SQL. 
+Each run of a scheduled query can receive the following query parameters.
+
+To manually test a query string with 
+	@run_time 
+	@run_date 
+parameters before scheduling a query, use the command line interface.
+
++ permissions
+
+Ensure that the person creating the transfer has the following required permissions in BigQuery:
+
+    bigquery.transfers.update - create the transfer
+    bigquery.datasets.update - on the target dataset
+
+When you set up the scheduled query, if the destination table for your results doesn't exist, 
+BigQuery attempts to create the table for you.
+
+You can set up a scheduled query to authenticate with a service account. 
+A service account is a Google Account associated with your GCP project. 
+The service account can run jobs associated with its own service credentials, 
+rather than an end-user's credentials, such as a batch processing pipeline, or a scheduled query.

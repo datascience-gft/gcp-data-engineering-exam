@@ -1,0 +1,48 @@
+When copying multiple source tables to a destination table all source tables must have identical schemas.
+
+When exporting table data, the only supported destination is Cloud Storage.
+
+Quotas and limits apply to the different types of jobs you can run against tables, including:
+    Loading data into tables (load jobs)
+    Exporting data from tables (export jobs)
+    Querying table data (query jobs)
+    Copying tables (copy jobs)
+
+your charges are based 
+(1) on how much data is stored in the tables and partitions and 
+(2) on the queries you run against the table data:
+
+Many table operations are free, including 
+	loading, 
+	copying, 
+	exporting data. 
+
+Creating and update a table, permissions:
+
+    bigquery.dataEditor
+    bigquery.dataOwner
+    bigquery.admin
+
+Creating a table that references an external data source
+
+An external data source (also known as a federated data source) is a data source that you can query directly even though the data is not stored in BigQuery. 
+Instead of loading or streaming the data, you create a table that references the external data source.
+
+BigQuery offers support for querying data directly from:
+
+    Bigtable
+    Cloud Storage
+    Google Drive
+
+You can query data in a supported external data source by creating a temporary or permanent table that references data stored in the external data source.
+
+When you load data into BigQuery, you can: 
+	load data into a new table or partition, 
+	append data to an existing table or partition, 
+	overwrite a table or partition. 
+
+Controlling access to tables
+
+You cannot assign access controls directly to tables or views. 
+The lowest level of BigQuery resources to which you are able to grant access is the dataset level. 
+To configure access to tables and views, you grant a Cloud IAM role to an entity at the dataset level or higher.

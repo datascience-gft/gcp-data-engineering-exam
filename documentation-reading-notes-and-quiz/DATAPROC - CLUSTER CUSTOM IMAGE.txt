@@ -1,0 +1,54 @@
++ Set up your project
+
+    1. In the Cloud Console, on the project selector page, select or create a Cloud project.
+
+    2. Make sure that billing is enabled for your Google Cloud project. 
+
+    3. Enable the Cloud Dataproc API, Compute Engine API, and Cloud Storage APIs.
+
+    4. Install and initialize the Cloud SDK.
+
+    5. Install Python 2.7+
+
+    6. Prepare a customization script that installs custom packages and/or updates configurations, for example:
+
+      #! /usr/bin/bash
+      apt-get -y update
+      apt-get install python-dev
+      apt-get install python-pip
+      pip install numpy
+      
+
++ Create a Cloud Storage bucket in your project
+
+    1. In the Cloud Console, go to the Cloud Storage Browser page.
+
+    2. Click Create bucket.
+
+    3. In the Create bucket dialog, specify the following attributes:
+        A unique bucket name, subject to the bucket name requirements.
+        A storage class.
+        A location where bucket data will be stored.
+    
+    4. Click Create.
+
+
++ Generating a custom image
+
+You will use generate_custom_image.py, a Python program to create a Dataproc custom image.
+How it works
+
+The generate_custom_image.py program launches a temporary Compute Engine VM instance with the specified Dataproc base image, then runs the customization script inside the VM instance to install custom packages and/or update configurations. After the customization script finishes, it shuts down the VM instance and creates a Cloud Dataproc custom image from the disk of the VM instance. The temporary VM is deleted after the custom image is created. The custom image is saved and can be used to create Dataproc clusters.
+
+The generate_custom_image.py program uses either gcloud (the default) to run multi-step workflows on Compute Engine.
+
++ Using a custom image
+
+You specify the custom image when you create a Dataproc cluster. 
+A custom image is saved in Cloud Compute Images, and is valid to create a Cloud Dataproc cluster for 60 days from its creation date (see How to create a cluster with an expired custom image to use a custom image after its 60-day expiration date).
+
+You can create a Dataproc cluster with a custom image using the dataproc clusters create command with the --image flag. Example:
+
+gcloud dataproc clusters create cluster-name \
+    --image=custom-image-URI \
+    ... other flags ...

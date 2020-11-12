@@ -1,0 +1,77 @@
+A publisher application creates and sends messages to a topic. 
+
+Pub/Sub offers at-least-once message delivery and best-effort ordering to existing subscribers, as explained in the Subscriber Overview.
+
+The general flow for a publisher application is:
+
+    Create a message containing your data.
+    Send a request to the Pub/Sub Server to publish the message to the desired topic.
+
++ Publish messages to a topic
+
+When using JSON over REST, message data must be base64-encoded. 
+
+The entire request including one or more messages must be smaller than 10MB, after decoding. 
+
+Note that the message payload must not be empty; it must contain either a non-empty data field, or at least one attribute.
+
+Client libraries, depending on your choice of programming language, 
+can publish messages synchronously or asynchronously. 
+Asynchronous publishing allows for batching and higher throughput in your application.
+
+
+All client libraries support publishing messages asynchronously.
+
+A server-generated ID (unique within the topic) is returned on the successful publication of a message.
+
+Request:
+
+The request must be authenticated with an access token in the Authorization header.
+
+Specify the following fields in the request body:
+
+{
+  "messages": [
+    {
+      "attributes": {
+        "key": "iana.org/language_tag",
+        "value": "en"
+      },
+      "data": "SGVsbG8gQ2xvdWQgUHViL1N1YiEgSGVyZSBpcyBteSBtZXNzYWdlIQ=="
+    }
+  ]
+}
+
+Response:
+
+200 OK
+
+{
+  "messageIds": [
+    "19916711285"
+  ]
+}
+
++ Batching to Balance Latency and Throughput
+
+The Pub/Sub client libraries batch multiple messages into a single call to the service. 
+Larger batch sizes increase message throughput (rate of messages sent per CPU). 
+The cost of batching is latency for individual messages, which are queued in memory until their corresponding batch is filled and ready to be sent over the network. 
+
+To minimize latency, batching should be turned off. 
+This is particularly important for applications that publish a single message as part of a request-response sequence. 
+A common example of this pattern is encountered in serverless, event-driven applications using Cloud Functions or App Engine.
+
+Messages can be batched based on request size (in bytes), number of messages, and time.
+
++ Retrying Requests
+
+Publishing failures are automatically retried, except for errors that do not warrant retries.
+
+Retry settings control both the total number of retries and exponential backoff (how long the client waits between subsequent retries). The initial RPC timeout is the time the client waits for the initial RPC to succeed before retrying. The total timeout is the time the client waits before it stops retrying. To retry publish requests, the initial RPC timeout should be shorter than the total timeout.
+
+Once the first RPC fails or times out, the exponential backoff logic determines when the subsequent retries occur. On each retry, the RPC timeout increases by this multiplier, up to the maximum RPC timeout. In addition, the retry delay settings determine how long the client waits between getting an error or timeout and initiating the next request.
+
++ Concurrency Control
+
+Support for concurrency depends on your programming language.

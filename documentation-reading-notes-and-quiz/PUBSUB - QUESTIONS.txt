@@ -1,0 +1,181 @@
+The easiest and recommended way for most users to use Pub/Sub is with our provided __________. 
+
+If you are an advanced user and our client libraries don't meet your specific needs, 
+you can also develop your own client libraries to directly access Pub/Sub's REST/HTTP and gRPC interfaces.
+
+
+PUBLISHER
+
+
+Pub/Sub offers __________ message delivery and best-effort _______ to existing subscribers
+
+
+When using JSON over REST, message data must be __________ encoded.
+
+The entire request including one or more messages must be smaller than ___, after decoding. 
+
+Note that the message payload must not be empty; it must contain either a non-empty _________, or at least one _______.
+
+can publish messages synchronously or asynchronously. 
+Asynchronous publishing allows for batching and higher __________ in your application.
+
+The Pub/Sub client libraries batch multiple messages into a single call to the service. 
+The cost of batching is _______ for individual messages
+
+Response:
+
+200 OK
+
+{
+  "messageIds": [
+    "19916711285"
+  ]
+}
+
+To minimize latency, batching should be turned off. 
+This is particularly important for applications that publish a single message as part of a request-response sequence. 
+A common example of this pattern is encountered in s______, e____-d______ applications using _______ or ________.
+
+
+
+Publishing failures are automatically retried, except for errors that do not warrant retries.
+
+Retry settings control both the total number of _______ and ________ backoff.
+The initial RPC timeout is the time the client waits for the initial RPC to succeed before retrying.
+The total timeout is the time the client waits before it stops retrying.
+Once the first RPC fails or times out, the _______ backoff logic determines when the subsequent retries occur. 
+
+
+
+SUBSCRIBER
+
+
+To receive messages published to a topic, you must create a _______ to that topic. 
+
+Pub/Sub delivers each published message _______ for every subscription.
+
+a message that cannot be delivered within the maximum retention time of ______ is deleted and is no longer accessible.
+
+Once a message is sent to a subscriber, the subscriber should ______ the message. 
+
+Pub/Sub will repeatedly attempt to deliver any message that has not been ______. 
+
+While a message is outstanding to a subscriber, however, Pub/Sub tries not to ______________________________ on the same subscription. 
+
+You can achieve exactly once processing of Pub/Sub message streams using the ____________ programming model. The ______ I/O connectors lets you interact with Cloud Dataflow via controlled ______ and ______ connector. 
+You can use the ______ PubSubIO connector (for Java and Python) to read from Cloud Pub/Sub. 
+
+
+
++ Pull subscription
+
+In pull delivery, your <subscriber application initiates requests> to the Pub/Sub server to retrieve messages.
+
++ Push subscription
+
+In push delivery, Pub/Sub initiates requests to your subscriber application to deliver messages.
+
+The Pub/Sub server sends each message as an HTTPS request to the subscriber application at a pre-configured ______.
+
+Pull 	
+
+    Large volume of messages (many more than 1/second).
+    ______ and ______ of message processing is critical.
+    Public HTTPS ______, with non-self-signed ______, is not feasible to set up.
+
+Push	
+
+    Multiple topics that must be processed by the same webhook.
+    ______ Standard and ____________ subscribers.
+
+
+By default, subscriptions expire after 31 days of inactivity
+
+
+
+PULL
+
+
+Using asynchronous pulling provides ____________ in your application, by not requiring your application to block for new messages.
+
+Your subscriber client might process and acknowledge messages more slowly than Pub/Sub sends them to the client.
+
+More generally, the need for flow control indicates that messages are being published at a higher rate than they are being consumed. If this is a persistent state, rather than a transient spike in message volume, consider increasing the number of subscriber client instances.
+
+
+When you do not acknowledge a message before its __________________ has expired, Pub/Sub resends the message. 
+As a result, Pub/Sub can send duplicate messages.
+
+ To reduce the duplication rate, extend the message deadline.
+
+    Client libraries handle deadline extension automatically, but you should note that there are default limits on the maximum extension deadline that can be configured.
+    If you are building your own client library, use the ____________ method to extend the acknowledgement deadline.
+
+
+PUSH
+
+
+A Pub/Sub subscription can be configured to send all messages as an HTTP POST requests to a webhook, a push endpoint, URL. 
+
+For push subscriptions, Pub/Sub does not send a negative acknowledgment (sometimes known as a nack). 
+
+If your webhook does not return a ____________, Pub/Sub retries delivery until the message expires after the subscription's ____________ period.
+
+Automatic authentication and authorization mechanisms are available for App Engine Standard and Cloud Functions endpoints hosted in the same project as the subscription.
+
+
+SUB REPLAY and PURGE
+
+
+Normally, acknowledged messages are inaccessible to subscribers of a given subscription. 
+In addition, subscriber clients must process every message in a subscription even if only a subset is needed.
+
+The Seek feature extends subscriber functionality by allowing you to alter the acknowledgement state of messages in bulk. 
+For example, you can replay previously acknowledged messages or purge messages in bulk.
+
++ Seeking to a ____________
+
+Seeking to a time marks every message received by Pub/Sub before the time as acknowledged, and all messages received after the time as unacknowledged. 
+You can seek to a time in the future to purge messages. 
+To replay and reprocess previously acknowledged messages, seek to a prior time. 
+
++ Seeking to a ____________
+
+The ____________ feature allows you to capture the message acknowledgment state of a subscription. Once a ____________ is created, it retains
+
++ Eventual consistency
+
+Seek operations are strictly consistent in regard to message delivery guarantees. 
+This means that any message that is to become unacknowledged based on the seek condition is guaranteed to be eventually delivered at least once after the seek operation succeeds.
+
+
++ Use cases
+
+    Update subscriber code safely. 
+    Recover from unexpected subscriber problems. 
+    Save processing time and cost.
+    Test subscriber code on known data. 
+
+
+
+
+
+In Pub/Sub, access control can be configured at the ____________ level and at the ____________ level. For example:
+
+    Grant access on a per-______ or per-s______ basis, rather than for the whole Cloud project.
+    Grant access with limited capabilities, such as to only publish messages to a topic, or to only consume messages from a subscription, but not to delete the topic or subscription.
+    Grant access to all Pub/Sub resources within a project to a group of developers.
+
+Service accounts are recommended for almost all use cases, whether you are developing locally or in a production application. For an example of how to set up authentication with a service account, see Pub/Sub client libraries.
+
+
+
+Pub/Sub encrypts messages with Google-managed keys by default.
+
+You can also use the Stackdriver ______ API to query and view metrics for subscriptions and topics.
+
+At the application layer, Pub/Sub individually encrypts incoming messages as soon as the message is received. 
+
+Every message is encrypted at the following states and layers:
+    At rest
+    In transit

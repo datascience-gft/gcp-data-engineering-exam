@@ -1,0 +1,37 @@
+You can create a Dataproc cluster 
+	via a Dataproc API clusters.create HTTP 
+	programmatic request, using the Cloud SDK gcloud command-line tool in 
+		a local terminal window 
+		or in Cloud Shell, 
+		or from the Google Cloud Console opened in a local browser. 
+	You can also create clusters programmatically using Cloud Client Libraries, or via API requests.
+
++ Cluster Region
+
+You can specify a global region or a specific region for your cluster. 
+
+	The global region is a special multi-region endpoint that is capable of deploying instances into any user-specified Compute Engine zone. 
+
+	You can also specify distinct regions, such as us-east1 or europe-west1, <<to isolate resources>> (including VM instances and Cloud Storage) and metadata storage locations utilized by Dataproc within the user-specified region. 
+
+
+Compute Engine Virtual Machine instances (VMs) in a Dataproc cluster, consisting of master and worker VMs, 
+require full internal IP networking access to each other. 
+The default network available (and normally used) to create a cluster helps ensure this access. 
+
+
+To create a Dataproc cluster on the command line, 
+run the Cloud SDK gcloud dataproc clusters create command locally in a terminal window or in Cloud Shell.
+
+	gcloud dataproc clusters create cluster-name
+
+
+Create a cluster with a YAML fileBeta
+
+    Run the following gcloud command <to export> the configuration of an existing Dataproc cluster into a YAML file.
+
+    gcloud beta dataproc clusters export my-existing-cluster --destination cluster.yaml
+
+Create a new cluster by importing the YAML file configuration.
+
+    gcloud beta dataproc clusters import my-new-cluster --source cluster.yaml

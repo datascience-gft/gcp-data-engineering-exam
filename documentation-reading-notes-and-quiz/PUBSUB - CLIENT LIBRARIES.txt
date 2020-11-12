@@ -1,0 +1,8 @@
+The easiest and recommended way for most users to use Pub/Sub is with our provided client libraries. 
+
+They provide an optimized developer experience by using each supported language's natural conventions and styles. 
+
+They also reduce the boilerplate code you have to write because they're designed to enable you to work with service metaphors in mind, rather than implementation details or service API concepts.
+
+If you are an advanced user and our client libraries don't meet your specific needs, 
+you can also develop your own client libraries to directly access Pub/Sub's REST/HTTP and gRPC interfaces.

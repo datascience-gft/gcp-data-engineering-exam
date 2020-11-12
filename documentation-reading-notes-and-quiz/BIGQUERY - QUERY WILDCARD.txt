@@ -1,0 +1,94 @@
+Wildcard tables enable you to query multiple tables using concise SQL statements. 
+Wildcard tables are available only in standard SQL.
+Not in legacy SQL
+
+A wildcard table represents a union of all the tables that match the wildcard expression. 
+
+
+For example, the following FROM clause uses 
+	the wildcard expression gsod* 
+	to match all tables in the noaa_gsod dataset 
+	that begin with the string gsod.
+
+FROM
+  `  bigquery-public-data  .  noaa_gsod  .  gsod  *  `
+
+Each row in the wildcard table contains a special column that contains the value matched by the wildcard character.
+
++ Limitations
+
+	The wildcard table functionality does not support <<views>>. 
+	If the wildcard table matches any view in the dataset, the query returns an error. 
+
+	cached results are not supported for queries against multiple tables using a wildcard 
+	even if the Use Cached Results option is checked. 
+
+	Wildcard tables support native BigQuery storage only. 
+	You cannot use wildcards when querying an external table or a view.
+
+	Queries that contain Data Manipulation Language (DML) statements cannot use a wildcard table 
+	as the target of the query. 
+
+Without Wildcard:
+#standardSQL
+SELECT
+  max,
+  ROUND((max-32)*5/9,1) celsius,
+  mo,
+  da,
+  year
+FROM (
+  SELECT
+    *
+  FROM
+    `bigquery-public-data.noaa_gsod.gsod1929` UNION ALL
+  SELECT
+    *
+  FROM
+    `bigquery-public-data.noaa_gsod.gsod1930` UNION ALL
+  SELECT
+    *
+  FROM
+    `bigquery-public-data.noaa_gsod.gsod1931` UNION ALL
+
+  # ... Tables omitted for brevity
+
+  SELECT
+    *
+  FROM
+    `bigquery-public-data.noaa_gsod.gsod1940` )
+
+The same query using a wildcard table is much more concise:
+
+#standardSQL
+SELECT
+  max,
+  ROUND((max-32)*5/9,1) celsius,
+  mo,
+  da,
+  year
+FROM
+  ` bigquery-public-data . noaa_gsod . gsod19 * `
+WHERE
+                _TABLE_SUFFIX 	BETWEEN '29'  	AND 	'40'
+
+
++ _TABLE_SUFFIX
+
+To restrict the query so that it scans an arbitrary set of tables, 
+use the _TABLE_SUFFIX pseudo column in the WHERE clause. 
+
+The _TABLE_SUFFIX <<pseudo column>> contains the values matched by the table wildcard. 
+
+
+
+For example, the previous sample query that scans all tables from the 1940s uses a table wildcard 
+to represent the last digit of the year:
+
+FROM
+  ` bigquery-public-data . noaa_gsod . gsod194 * `
+
+The corresponding _TABLE_SUFFIX pseudo column contains values in the range 0 through 9, 
+representing the tables gsod1940 through gsod1949. 
+These _TABLE_SUFFIX values can be used in the WHERE clause to filter for specific tables.
+

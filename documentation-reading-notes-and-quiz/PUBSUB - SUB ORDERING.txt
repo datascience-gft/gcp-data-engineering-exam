@@ -1,0 +1,29 @@
+Pub/Sub provides a highly-available, scalable message delivery service. 
+
+The tradeoff for having these properties is that the order in which messages are received by subscribers is not guaranteed. 
+
+While the lack of ordering may sound burdensome, there are very few use cases that actually require strict ordering.
+
++ What Is Order?
+
+On the surface, the idea of messages being in order is a simple one. 
+
+Your publisher sends a message on a topic into Pub/Sub. The message is then delivered to your subscriber via a subscription. In the presence of a single synchronous publisher, a single synchronous subscriber, and a single synchronous message delivery server—all running on a synchronous transport layer—the notion of order seems simple: messages are ordered by when the publisher successfully publishes them, by some measure of absolute time or sequence.
+
+Even in this simple case, guaranteed ordering of messages would put severe constraints on throughput. The only way to truly guarantee order of messages would be for the message delivery service to deliver the messages one at a time to the subscriber, waiting to deliver the next message until the service knows the subscriber has received and processed the current message (generally via an acknowledgement sent from the subscriber to the service). Throughput of one message to the subscriber at a time is not scalable. The service could instead only guarantee that the first delivery of any message is in-order, allowing redelivery attempts to happen at any time. That would allow many messages to be sent to the subscriber at once. However, even if ordering constraints are relaxed in this way, “order” makes less sense as you move away from the single publisher/message delivery service/subscriber case.
+
++ Do I Really Have Order?
+
+Defining message order can be complicated, depending on your publishers and subscribers. First of all, it is possible you have multiple subscribers processing messages on a single subscription:
+
+In this case, even if messages come through the subscription in order, there are no guarantees of the order in which the messages will be processed by your subscribers. If order of processing is important, then subscribers would need to coordinate through some ACID storage system such as Cloud Firestore or Cloud SQL.
+
+Similarly, multiple publishers on the same topic can make order difficult:
+
+How do you assign an order to messages published from different publishers? Either the publishers themselves have to coordinate, or the message delivery service itself has to attach a notion of order to every incoming message. Each message would need to include the ordering information. The order information could be a timestamp (though it has to be a timestamp that all servers get from the same source in order to avoid issues of clock drift), or a sequence number (acquired from a single source with ACID guarantees). Other messaging systems that guarantee ordering of messages require settings that effectively limit the system to multiple publishers sending messages through a single server to a single subscriber.
+
++ Summary
+
+When first using a message delivery service, having messages delivered in order seems like a desirable property. It simplifies the code necessary to process messages where order matters. However, providing messages in order comes at great cost to availability and scalability, no matter what message delivery system you use. For Google products built on the same infrastructure in Pub/Sub, availability and scalability are vitally important features, which is why the service does not offer in-order message delivery. Whenever possible, design your applications to avoid a dependency on message order. You will then be able to scale easily, with Pub/Sub scaling to deliver all of your messages quickly and reliably.
+
+If you decide to implement some form of message ordering with Pub/Sub, see Cloud Firestore and Cloud SQL to learn more about how to implement the strategies described in this document.

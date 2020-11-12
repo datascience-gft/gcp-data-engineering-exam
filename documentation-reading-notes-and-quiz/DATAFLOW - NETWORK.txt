@@ -1,0 +1,15 @@
++ A VPC network
+
+sometimes just called a network, provides connectivity for resources in a project.
+
++ A Shared VPC network 
+
+is one that exists in a separate project, called a host project, within your organization.
+
++ VPC Service Controls
+
+Dataflow VPC Service Controls provide additional security for your pipeline's resources and services.
+
++ Specifying a network and a subnetwork
+
+When you create a Dataflow job, you can specify either a network or a subnetwork. The following sections describe when you should use each parameter.

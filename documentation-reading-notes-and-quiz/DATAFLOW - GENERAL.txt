@@ -1,0 +1,58 @@
+Dataflow
+
+Fast, 
+unified 
+	stream 
+	batch 
+data processing
+
+Dataflow is a 
+	<<fully managed>> 
+	streaming analytics 
+service, 
+that minimizes latency, processing time, and cost through 
+	autoscaling 
+	batch 
+processing. 
+
+With its 
+	serverless approach to resource provisioning and management, 
+you have access to virtually limitless capacity to solve your biggest data processing challenges, 
+while paying only for what you use.
+
+
++ Horizontal autoscaling
+
+Horizontal autoscaling of worker resources for optimum throughput results in better overall price-to-performance.
+
++ Flexible resource scheduling pricing for batch processing
+
+For processing with flexibility in job scheduling time, such as overnight jobs, 
+flexible resource scheduling (FlexRS) offers 
+<<a lower price for batch processing. >>
+
+
++ Automated resource management and dynamic work rebalancing
+
+Dataflow automates provisioning and management of processing resources to minimize latency and maximize utilization so that you do not need to spin up instances or reserve them by hand. Work partitioning is also automated and optimized to dynamically rebalance lagging work. No need to chase down “hot keys” or preprocess your input data.
+
+
++ Stream analytics
+
+Built on the autoscaling infrastructure of Dataflow along with Pub/Sub and BigQuery, 
+	Ingest --> Pub/Sub --> Dataflow --> BigQuery
+
+our streaming solution provisions the resources you need to ingest, process, and analyze fluctuating volumes of real-time data for real-time business insights. 
+This abstracted provisioning reduces complexity and makes stream analytics accessible to both data analysts and data engineers. 
+
++ Autoscaling
+
+Autoscaling lets the Dataflow service automatically choose the appropriate number of worker instances required to run your job. 
+The Dataflow service may also dynamically reallocate more workers or fewer workers during runtime to account for the characteristics of your job. 
+
++ Customer-managed encryption keys 	
+
+You can create a batch or streaming pipeline 
+that is protected with a customer-managed encryption key (CMEK) 
+or access CMEK-protected data in 
+sources and sinks. 

@@ -1,0 +1,13 @@
+When you execute your pipeline using the Dataflow managed service, you can view that job and any others by using Dataflow's web-based monitoring user interface. 
+
+The monitoring interface lets you see and interact with your Dataflow jobs.
+
+The monitoring interface can show you:
+
+    A list of all currently running Dataflow jobs and previously run jobs within the last 30 days.
+    A graphical representation of each pipeline.
+    Details about your job's status, execution, and SDK version.
+    Links to information about the Google Cloud services running your pipeline, such as Compute Engine and Cloud Storage.
+    Any errors or warnings that occur during a job.
+
+

@@ -1,0 +1,47 @@
+When you create a clustered table in BigQuery, the table data is automatically organized based on the contents of one or more columns in the table’s schema. 
+The columns you specify are used to colocate related data.
+ 
+When you cluster a table using multiple columns, the order of columns you specify is important. 
+The order of the specified columns determines the sort order of the data.
+
+Clustering can improve the performance of certain types of queries such as queries that use filter clauses and queries that aggregate data. 
+When data is written to a clustered table by a query job or a load job, 
+BigQuery sorts the data using the values in the clustering columns. 
+These values are used to organize the data into multiple blocks in BigQuery storage. 
+When you submit a query that contains a clause that filters data based on the clustering columns, 
+BigQuery uses the sorted blocks to eliminate scans of unnecessary data.
+
+Similarly, when you submit a query that aggregates data based on the values in the clustering columns, 
+performance is improved because the sorted blocks colocate rows with similar values.
+
+
++ When to use clustering
+
+Currently, BigQuery allows clustering over a partitioned table. Use clustering over a partitioned table when:
+
+    Your data is already partitioned on a date, timestamp, or integer column.
+    You <commonly> use filters or aggregation against particular columns in your queries.
+
+Table clustering is possible for tables partitioned by:
+
+    ingestion time
+    date/timestamp
+    integer range
+
+Currently, clustering is not possible for unpartitioned tables.
+
++ Clustering partitioned tables
+
+In a table partitioned by a date or timestamp column, each partition contains a single day of data. 
+When the data is stored, BigQuery ensures that all the data in a block belongs to a single partition. 
+
+In a clustered table, BigQuery automatically sorts the data based on the values in the clustering columns and organizes them in optimally sized storage blocks. 
+
+You can achieve more finely grained sorting by creating a table that is clustered and partitioned. 
+
++ Automatic re-clustering
+
+As data is added to a clustered table, the newly inserted data can be written to blocks that contain key ranges that overlap with the key ranges in previously written blocks. 
+These overlapping keys weaken the sort property of the table.
+
+To maintain the performance characteristics of a clustered table, BigQuery performs automatic re-clustering in the background to restore the sort property of the table. 

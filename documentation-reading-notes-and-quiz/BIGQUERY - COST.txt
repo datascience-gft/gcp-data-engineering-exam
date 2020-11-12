@@ -1,0 +1,28 @@
+On-demand queries are charged based on the number of bytes read. 
+
+To estimate costs before running a query use the:
+
+    Query validator in the Cloud Console or the classic BigQuery web UI
+    --dry_run flag in the CLI
+    dryRun parameter when submitting a query job using the API
+    Google Cloud Pricing Calculator
+    Client libraries
+
+
+If you have multiple BigQuery projects and users, 
+you can manage costs by requesting a custom quota that specifies a limit on the amount of query data processed per day.
+
+Creating a custom quota on query data allows you to control costs at the 
+	project 
+	user
+level.
+
+    Project-level custom quotas limit the aggregate usage of all users in that project.
+
+    User-level custom quotas are separately applied to each user or service account within a project.
+
+After you set a custom quota, BigQuery returns an error when you exceed it.
+
+What if I exceeded my custom quota, but I want to reset it?
+
+You can run your query from another project that has access to your datasets and that doesn't have a custom quota or hasn't yet exceeded it.

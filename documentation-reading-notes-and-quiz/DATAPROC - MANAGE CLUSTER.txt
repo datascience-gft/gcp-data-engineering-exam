@@ -1,0 +1,25 @@
++ Updating a cluster
+
+You can update a cluster by 
+	issuing a Dataproc API clusters.patch request, 
+	running a gcloud dataproc clusters update command in a local terminal window or in Cloud Shell, 
+	or by editing cluster parameters from the Configuration tab of the Cluster details page for the cluster in the Google Cloud Console.
+
+The following cluster parameters can be updated:
+
+    the number of standard worker nodes in a cluster
+
+    the number of preemptible worker nodes in a cluster
+
+    whether to use graceful decommissioning to control shutting down a worker after its jobs are completed
+
+    adding or deleting cluster labels
+
+
+
++ Deleting a cluster
+
+You can delete a cluster 
+	via a Dataproc API clusters.delete HTTP or programmatic request, 
+	using the Cloud SDK gcloud command-line tool locally in a terminal window or in Cloud Shell, 
+	or from the Google Cloud Console.

@@ -1,0 +1,11 @@
+The Google Data Studio BigQuery connector allows you to access data from your BigQuery tables within Google Data Studio. 
+
+BigQuery is a paid product and you will incur BigQuery usage costs when accessing BigQuery through Google Data Studio. 
+
+BigQuery query pricing provides the first 1 TB per month free of charge.
+
+You must have the appropriate permissions in order to add a BigQuery data source to a Google Data Studio report. 
+
+In addition, the permissions applied to BigQuery datasets will apply to the reports, charts, and dashboards you create in Google Data Studio. 
+
+n the Request for permission dialog, click Allow to give Google Data Studio the ability to view data in BigQuery. 

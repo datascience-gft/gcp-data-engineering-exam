@@ -1,0 +1,86 @@
+Your Dataflow program expresses a data processing pipeline, from start to finish. 
+
+To construct a pipeline using the classes in the Dataflow SDKs, your program will need to perform the following general steps:
+
+    Create a < Pipeline > object.
+
+    Use a <Read> or <Create> transform <to create> one or more PCollections for your pipeline data.
+
+    Apply transforms to each PCollection. 
+	Transforms can change, filter, group, analyze, or otherwise process the elements in a PCollection. 
+	Each transform creates a new output PCollection, 
+	to which you can apply additional transforms until processing is complete.
+
+    Write or otherwise output the final, transformed PCollections.
+
+    Run the pipeline.
+
++ Creating Your Pipeline Object
+
+A Dataflow program often starts by creating a Pipeline object.
+
+In the Dataflow SDKs, each pipeline is represented by an explicit object of type Pipeline. 
+Each Pipeline object is an independent entity that encapsulates both 
+	the data the pipeline operates over 
+	the transforms that get applied to that data.
+
+// Start by defining the options for the pipeline.
+PipelineOptions options = PipelineOptionsFactory.create();
+
+// Then create the pipeline.
+Pipeline p = Pipeline.create(options);
+
++ Configuring Pipeline Options
+
+Use the pipeline options to configure different aspects of your pipeline. These can include:
+
+    Where your pipeline runs
+    Where your pipeline job stages files
+    Which Cloud Platform project your pipeline is associated with
+    How many Compute Engine instances your pipeline uses as workers
+
++ Reading Data Into Your Pipeline
+
+To create your pipeline's initial PCollection, you apply a root transform to your pipeline object. 
+A root transform creates a PCollection from either an external data source or some local data you specify.
+
+There are two kinds of root transforms in the Dataflow Java SDK: Read and Create. 
+	Read transforms: read data from an external source, such as BigQuery or a text file in Google Cloud Storage. 	Create transforms: create a PCollection from an in-memory java.util.Collection.
+
+The following example code shows how to apply a TextIO.Read root transform to read data from a text file in Google Cloud Storage. 
+The transform is applied to a Pipeline object p, and returns a pipeline data set in the form of a PCollection<String>:
+
+PCollection<String> lines = p.apply(
+  TextIO.Read.named("ReadMyFile").from("gs://some/inputData.txt"));
+
++ Applying Transforms to Process Pipeline Data
+
+To use transforms in your pipeline, you apply them to the PCollection that you want to transform.
+
+To apply a transform, you call the apply method on each PCollection that you want to process, passing the desired transform object as an argument.
+
+The Dataflow SDKs contain a number of different transforms that you can apply to your pipeline's PCollections. 
+These include general-purpose <core transforms>, such as ParDo or Combine. 
+There are also pre-written <composite transforms> included in the SDK, 
+which combine one or more of the core transforms in a useful processing pattern, such as counting or combining elements in a collection. 
+
++ Writing or Outputting Your Final Pipeline Data
+
+Once your pipeline has applied all of its transforms, you'll usually need to output the results. 
+To output your pipeline's final PCollections, you apply a Write transform to that PCollection. 
+Write transforms can output the elements of a PCollection to an external data sink, 
+such as a file in Google Cloud Storage or a BigQuery table. 
+
+The following example code shows how to apply a TextIO.Write transform to write a PCollection of String to a text file in Google Cloud Storage:
+
+PCollection<String> filteredWords = ...;
+filteredWords.apply(TextIO.Write.named("WriteMyFile").to("gs://some/outputData.txt"));
+
++ Running Your Pipeline
+
+Once you have constructed your pipeline, you use the run method to execute the pipeline. 
+Pipelines are executed asynchronously: 
+	the program you create sends a specification for your pipeline to a pipeline runner, 
+	which then constructs and runs the actual series of pipeline operations. 
+
+p.run();

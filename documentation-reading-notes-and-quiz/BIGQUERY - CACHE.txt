@@ -1,0 +1,68 @@
+BigQuery writes all query results to a table. 
+
+The table is either 
+	a destination table, 
+	a temporary, 
+	cached results table. 
+
+Temporary, cached results tables are maintained per-user, per-project. 
+
+There are no storage costs for temporary tables, 
+but if you write query results to a permanent table, you are charged for storing the data.
+
+All query results, including both interactive and batch queries, 
+are cached in temporary tables for approximately 24 hours 
+with some exceptions.
+
+
+run a <duplicate> query, will reuse cached results. 
+the duplicate query text <must be exactly the same> as the original query.
+
+For query results to persist in a cached results table, the result set must be smaller than the maximum response size.
+
+you should not submit query jobs that retrieve results from the cache table. 
+Instead, write your results to a named destination table. 
+To enable easy cleanup, features such as 
+	the dataset level <defaultTableExpirationMs> property
+can expire the data automatically after a given duration.
+
+When query results are retrieved from a cached results table, the job statistics property 
+
+	statistics.query.cacheHit 
+
+returns as true, and you are not charged for the query.
+
+Query results are not cached:
+
+    When a <<<destination table>>> is specified.
+    If any of the referenced tables or logical views have <changed> 
+    recently received <<streaming inserts>> (a streaming buffer is attached to the table) 
+    query uses non-deterministic functions; for example, 
+	CURRENT_TIMESTAMP() 
+	NOW() 
+	CURRENT_USER() 
+    return different values depending on when a query is executed
+    querying multiple tables using <<<wildcard>>>
+    cached results have <<expired>>.
+    runs against an external data source
+
+When you run a query, a temporary, cached results table is created in a special dataset referred to as 
+	an "anonymous dataset". 
+Unlike regular datasets which inherit permissions from the IAM resource hierarchy model (project and organization permissions), 
+access to anonymous datasets is restricted to the dataset owner. 
+The owner of an anonymous dataset is the user who ran the query that produced the cached result.
+
+When an anonymous dataset is created, the user that runs the query job is explictly given 
+	bigquery.dataOwner access 
+to the anonymous dataset.
+
+The 
+	Use cached results 
+option reuses results from a previous run of the same query 
+unless 
+	the tables being queried have changed. 
+
+Using cached results is only beneficial for repeated queries. 
+
+For new queries, the Use cached results option has no effect, 
+though it is enabled by default.

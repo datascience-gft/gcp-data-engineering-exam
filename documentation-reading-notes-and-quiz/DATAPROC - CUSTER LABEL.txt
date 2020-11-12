@@ -1,0 +1,39 @@
+You can apply user labels to Dataproc cluster and job resources in order to group resources and related operations for later filtering and listing. You associate labels with resources when the resource is created, at cluster creation or job submission. 
+
+Once a resource is associated with a label, the label is propagated to operations performed on the resource—cluster create, update, patch, or delete; job submit, update, cancel, or delete—allowing you to filter and list clusters, jobs, and operations by label.
+
+You can also add labels to Compute Engine resources associated with cluster resources, such as Virtual Machine instances and disks.
+
++ What are labels?
+
+A label is a key-value pair that helps you organize your Google Cloud Dataproc clusters and jobs. 
+
+You can attach a label to each resource, then filter the resources based on their labels. 
+
+Information about labels is forwarded to the billing system, so you can break down your billing charges by label.
+
+
+
+Common uses of labels
+
+We do not recommend creating large numbers of unique labels, such as for timestamps or individual values for every API call. Here are some common use cases for labels:
+
+    Team or cost center labels: Add labels based on team or cost center to distinguish Dataproc clusters and jobs owned by different teams (for example, team:research and team:analytics). You can use this type of label for cost accounting or budgeting.
+
+    Component labels: For example, component:redis, component:frontend, component:ingest, and component:dashboard.
+
+    Environment or stage labels: For example, environment:production and environment:test.
+
+    State labels: For example, state:active, state:readytodelete, and state:archive.
+
+
+Requirements for labels
+
+The labels applied to a resource must meet the following requirements:
+
+    Each resource can have multiple labels, up to a maximum of 64.
+    Each label must be a key-value pair.
+    Keys have a minimum length of 1 character and a maximum length of 63 characters, and cannot be empty. Values can be empty, and have a maximum length of 63 characters.
+    Keys and values can contain only lowercase letters, numeric characters, underscores, and dashes. All characters must use UTF-8 encoding, and international characters are allowed.
+    The key portion of a label must be unique. However, you can use the same key with multiple resources.
+    Keys must start with a lowercase letter or international character.

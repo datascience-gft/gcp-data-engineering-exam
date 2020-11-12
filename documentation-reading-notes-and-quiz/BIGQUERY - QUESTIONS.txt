@@ -1,0 +1,211 @@
+BigQuery contineously takes _______ to automatically _______ the data.
+
+It is more _______ _______ to backup data in BigQuery rather than creating duplicated storage in Cloud Storage.
+
+Copy Datasets:
+When you load nested and repeated data, your schema cannot contain more than _______ levels of nested STRUCTs
+
+When auto-detection is enabled, 
+BigQuery starts the inference process by selecting a _______ in the data source 
+and scanning up to _______ rows of data to use as a representative sample. 
+
+
+When exporting table data, the only supported destination is _______ _______.
+
+Many table operations are free, including 
+	_______, 
+	_______, 
+	_______ data. 
+
+BigQuery offers support for querying data directly from:
+
+    _______
+    _______ _______
+    _______ _______
+
+When you load data into BigQuery, you can: 
+	_______ data into a new _______ or _______, 
+	_______ data to an existing _______ or _______, 
+	_______ a _______ or _______.
+
+The lowest level of BigQuery resources to which you are able to grant access is the _______ level. 
+
+You can partition BigQuery tables by:
+
+    _______ _______: Tables are partitioned based on the data's ingestion (load) date or arrival date.
+
+    _______/_______: Tables are partitioned based on a TIMESTAMP or DATE column.
+
+    _______: Tables are partitioned based on an integer column.
+
+When you create an ingestion-time partitioned table, two pseudo columns are added to the table: 
+	_______ 
+	_______
+
+When you create date/timestamp partitioned tables, two special partitions are created:
+
+    The _______ partition: represents rows with _______ values in the partitioning column
+    The _______ partition: represents data that exists outside the allowed range of dates
+
++ Integer range partitioned tables
+Values that are outside of the range of the table go into the _______ partition.
+
+    BigQuery has a limit of _______ partitions for a partitioned table. 
+    There is no limit for the number of clusters in a table.
+
+Maximum number of partitions per partitioned table — 4,000
+Maximum number of partitions modified by a single job — 4,000
+Maximum number of partition modifications per ingestion time partitioned table — 5,000
+Maximum rate of partition operations — 50 partition operations every 10 seconds
+
+When you create and use partitioned tables in BigQuery, your charges are based on 
+    how much data is _______ in the partitions 
+    the _______ you run against the data
+
+BigQuery supports two types of queries:
+
+    _______ queries
+    _______ queries
+
+By default, BigQuery runs _______ queries, which means that the query is executed as soon as possible.
+BigQuery queues each _______ query on your behalf and starts the query as soon as idle resources are available, usually within a few minutes.
+
+To query the _PARTITIONTIME pseudo column, you must use an _______
+
+When you query data in ingestion-time partitioned tables, 
+you reference specific partitions by specifying the values in the _PARTITIONTIME or _PARTITIONDATE pseudo columns
+
+    _PARTITIONTIME BETWEEN TIMESTAMP('2016-01-01') AND TIMESTAMP('2016-01-02')
+    _PARTITIONDATE BETWEEN '2016-01-01' AND '2016-01-02'
+
+++ Better performance with pseudo columns
+
+To improve query performance, use the _PARTITIONTIME pseudo column by itself on the _______ side of a comparison. 
+
+In addition to using the pseudo columns to limit the number of partitions scanned during a query, you can also use the pseudo columns to query a range of partitioned tables using a _______ table.
+
+SELECT
+  field1,
+  field2,
+  field3
+FROM
+  `my_dataset.mytable_*`
+WHERE
+  _TABLE_SUFFIX = 'id1'
+  AND _PARTITIONTIME = TIMESTAMP('2017-01-01')
+
+Complex queries that require the evaluation of multiple stages of a query in order to resolve the predicate (such as inner queries or subqueries) will not prune partitions from the query.
+
+Loading data into BigQuery from _______ is not currently supported.
+
+    Currently, you can load data into BigQuery only from _______ 
+    or a _______ _______ (such as your local machine).
+
+The _______ binary format is the preferred format for loading both compressed and uncompressed data. 
+_______ data is faster to load because the data can be read in parallel, even when the data blocks are compressed. 
+
+For other data formats such as _______ and _______, 
+BigQuery can load uncompressed files significantly faster than compressed files 
+because uncompressed files can be read in parallel. 
+
+Dataflow 
+can load data directly into BigQuery. 
+using BigQuery I/O connector
+
+All query results, including both _______ and _______ queries, 
+are _______ in temporary tables for approximately 24 hours 
+
+run a <duplicate> query, will reuse cached results. 
+the duplicate query text <must be exactly the same> as the original query.
+
+
+When query results are retrieved from a cached results table, the job statistics property 
+
+	statistics.query.cacheHit 
+
+returns as true, and you are not charged for the query.
+
+Query results are not cached:
+
+    When a _______ is specified.
+    If any of the referenced tables or logical views have _______
+    recently received <<streaming inserts>> (a streaming buffer is attached to the table) 
+    query uses _______ functions; for example, 
+	_______
+	_______
+	CURRENT_USER() 
+    return different values depending on when a query is executed
+    querying multiple tables using _______
+    cached results have _______.
+    runs against an external data source
+
+When you run a query, a temporary, cached results table is created in a special dataset referred to as 
+	an "anonymous dataset". 
+
+Wildcard tables are available only in _______ SQL.
+Not in _______ SQL
+
+Standard query: `datasetname.tablename`
+Legacy query: [datasetname.tablename]
+
+Each row in the _______ table contains a special column that contains the value matched by the wildcard character.
+
+	The wildcard table functionality does not support _______. 
+
+	_______ results are not supported for queries against multiple tables using a wildcard 
+	even if the Use _______ Results option is checked. 
+
+	Wildcard tables support _______ BigQuery storage only. 
+
+BigQuery charges for queries by using one metric: 
+	the _______ OF _______ processed
+
+The first _______ TB of data processed per month is free of charge
+
+batch queries: If BigQuery hasn't started the query within 24 hours, BigQuery changes the job priority to interactive.
+
+When you run a query in the CLI, you can use the 
+
+	--_______ flag 
+
+to estimate the number of bytes read by the query.
+
+Destination table write preference section, choose one of the following:
+
+    Write if empty — Writes the query results to the table only if the table is empty.
+    Append to table — Appends the query results to an existing table.
+    Overwrite table — Overwrites an existing table with the same name using the query results
+
+Scheduled queries must be written in <<_______ SQL>>, which can include 
+	Data Definition Language (DDL) 
+	Data Manipulation Language (DML) 
+statements.
+
+	BigQuery does not guarantee data _______ for external data sources. 
+
+	Query performance for external data sources may not be as high as querying data in a native BigQuery table.
+
+	You cannot run a BigQuery job that _______ data to an external data source.
+
+	You cannot reference an external data source in a _______ table query.
+
+	External data sources do not support table _______ or _______.
+
+	When you query an external data source, the results are not _______.
+
+	You are limited to 4 concurrent queries against a Cloud Bigtable external data source.
+
+Creating a custom quota on query data allows you to control costs at the 
+	_______ 
+	_______
+level.
+
+    _______-level custom quotas limit the aggregate usage of all users in that project.
+
+    _______-level custom quotas are separately applied to each user or service account within a project.
+
+BigQuery automatically encrypts all data before it is written to disk. 
+
+You can also use customer-managed encryption keys, and encrypt individual values within a table.
+
+The Google Data Studio BigQuery connector allows you to access data from your BigQuery tables within Google Data Studio.

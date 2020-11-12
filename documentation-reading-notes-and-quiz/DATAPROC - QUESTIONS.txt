@@ -1,0 +1,142 @@
+Dataproc is a managed ____, ____, ____ and ____ service that lets you take advantage of open source data tools for 
+	batch processing, 
+	querying, 
+	streaming, 
+	machine learning. 
+
+Dataproc automation helps you to 
+	____ clusters quickly, 
+	manage them easily, 
+	save money by ____ clusters ____ when you don't need them. 
+
+
+Dataproc clusters can include ____ instances that have lower compute prices, reducing your costs even further. 
+
+Without using Dataproc, it can take from five to 30 minutes to create Spark and Hadoop clusters on-premises or through IaaS providers. 
+
+Dataproc has built-in integration with other Google Cloud Platform services, such as ____ , ____ , ____ .
+
+When you're done with a cluster, you can simply ____  it ____ , so you don’t spend money on an idle cluster.
+
+You can create a Dataproc cluster 
+	via a Dataproc API clusters.create HTTP 
+	programmatic request, using the Cloud SDK gcloud command-line tool in 
+		a local terminal window 
+		or in Cloud Shell, 
+		or from the Google Cloud Console opened in a local browser. 
+	You can also create clusters programmatically using Cloud Client Libraries, or via API requests.
+
+Compute Engine Virtual Machine instances (VMs) in a Dataproc cluster, consisting of master and worker VMs, 
+require full internal IP networking access to each other. 
+The <default network> available (and normally used) to create a cluster helps ensure this access.
+
+The ____ ____ ____ .py program launches a temporary ____ ____ ____  instance with the specified Dataproc base image, then runs the ____  script inside the VM instance to install custom packages and/or update configurations. After the customization script finishes, it ____  the VM instance and creates a Cloud Dataproc ____ ____  from the ____  of the VM instance. The temporary VM is ____  after the custom image is created. The custom image is saved and can be used to create Dataproc clusters.
+
+
+
+You specify the custom image when you create a Dataproc cluster. 
+A custom image is saved in ____ ____ ____ , and is valid to create a Cloud Dataproc cluster for ____  days from its creation date
+
+You can create a Dataproc cluster with a custom image using the dataproc clusters create command with the --image flag
+
+
+
+You can apply user ____ to Dataproc cluster and job resources in order to ____  resources and related operations for later ____  and ____ . You associate labels with resources when the resource is created, at cluster creation or job submission. 
+
+Once a resource is associated with a label, the label is propagated to operations performed on the resource—cluster create, update, patch, or delete; job submit, update, cancel, or delete—allowing you to filter and list ____ ____, and ____ by label.
+
+Each resource can have multiple labels, up to a maximum of 64.
+Each label must be a key-value pair.
+
+
+
+You can update a cluster by 
+	issuing a Dataproc API clusters.patch request, 
+
+
+The following cluster parameters can be ____ :
+
+    the number of ____ ____ ____  in a cluster
+
+    the number of ____  ____ ____ in a cluster
+
+    whether to use graceful ____ to control shutting down a worker after its jobs are completed
+
+    adding or deleting cluster ____ 
+
+
+You can delete a cluster 
+	via a Dataproc API clusters.delete HTTP 
+
+
+
+Dataproc job logs in Stackdriver
+
+When you run a Dataproc job, job driver output is ____  to the Cloud ____ , displayed in the ____ ____  window (for jobs submitted from the command line), and stored in ____ ____  (see Accessing job driver output). 
+
+To enable job driver logs in STACKDRIVER ____ , set the following cluster property when creating the cluster:
+
+    dataproc:dataproc.logging.stackdriver.job.driver.enable=true
+
+Use Stackdriver cluster metrics to monitor the performance and health of Dataproc clusters.
+
+    See Stackdriver Pricing to understand your costs.
+
+    See Monitoring Quotas and limits for information on metric data retention.
+
+
+
+Plan to migrate incrementally so you can leave time to migrate jobs,experiment, and test after moving each body of data.
+
+There are two different migration models you should consider for transferring ____ data to the cloud: 
+	____ and ____ 
+
+
+Both models use Hadoop ____ to copy data from your on-premises HDFS clusters to Cloud Storage, but they use different approaches.
+
+____ (distributed copy) is a tool used for large inter/intra-cluster copying.
+
++ ____ 
+
+The ____ model is the simplest model: the source cluster runs the ____ jobs on its data nodes and pushes files directly to ____ ____ , 
+
++ ____ 
+
+The ____ model is more complex, but has some advantages. An ____ Dataproc cluster runs the ____ jobs on its data nodes, pulls files from the source cluster, and copies them to Cloud Storage.
+
+
+The push model is the simplest model because the source cluster can push data directly to Cloud Storage and you don't need to create extra ____ ____  to perform the copy.
+
+If the source cluster is already running at ____ capacity, and if you cannot ____ the resources on the source cluster to perform the copy, then you should consider using the pull model instead.
+Impact on the source cluster's CPU and RAM resources is ____ , because the source nodes are used only for serving blocks out of the cluster. You can also fine-tune the specifications of the pull cluster's resources on Google Cloud to handle the copy jobs, and ____ ____  the pull cluster when the migration is complete.
+
+
+To understand the implications for network usage for both models, consider how Hadoop handles data replication in HDFS. Hadoop splits each file into multiple blocks — the block size is usually 128-256 megabytes. Hadoop replicates those blocks across multiple data nodes and across multiple racks to avoid losing data in the event of a data node failure or a rack failure. 
+
+The standard configuration is to store 3 replicas of each block.
+
+
+
+Plan on moving your data in ____ ____ over time. Schedule plenty of time to move the corresponding jobs to the cloud between data moves. Start your migration by moving ____ ____  data, such as ____ and ____ .
+
+
+Splitting by ____ . A common approach to splitting data for an incremental move is to <store ____ data in the cloud>, while <keeping your ____ data in HDFS in your on-premises system>. This enables you to test new and migrated jobs on older, less critical data.
+
+Sometimes you can split your data by looking at the ____ that use it. This can be especially helpful if you are migrating ____ incrementally. You can move just the data that is used by the ____ that you move.
+
+In some cases, you can split your data by areas of ____ . One advantage of taking this approach is that your data organization aligns with the organization of your business. Another advantage is that it allows you to leverage Google Cloud role-based access management.
+
+
+One of the challenges of using a hybrid solution is that sometimes a job needs to access data from both Google Cloud and from on-premises systems. If a dataset must be accessed in both environments, you need to establish a primary storage location for it in one environment and maintain a ____ copy in the other.
+
+The challenges of synchronizing data are similar, regardless of the primary location you choose. You need a way to identify when data has changed and a mechanism to propagate changes to the corresponding copies. If there is a potential for conflicting changes, you also need to develop a strategy for resolving them.
+
+You can use technologies such as ____ ____  to help manage your data synchronization.
+
+The easiest way to handle access control is to sort data into Cloud Storage buckets based on ____ requirements and configure your ____ policy at the bucket level. You can assign ____ that grant access to individual users or to groups. Grant access by ____ , and then assigning users to ____  as needed. You need to make data access decisions as you import and structure your data in Cloud Storage.
+
+
+Because ____ ____  is a Hadoop compatible file system, you can use Hadoop ____ to move your data from your on-premises HDFS to Cloud Storage. You can move data several ways using ____ .
+
+
+When you're copying or moving data between distinct storage systems such as multiple HDFS clusters or between HDFS and Cloud Storage, it's a good idea to perform some type of ____ to guarantee data integrity.

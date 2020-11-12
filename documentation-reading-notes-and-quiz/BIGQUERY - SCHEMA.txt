@@ -1,0 +1,101 @@
+A column name cannot use any of the following prefixes:
+    _TABLE_
+    _FILE_
+    _PARTITION
+
+
+Column types:
+
+Integer 	INT64 	Numeric values without fractional components
+Floating point 	FLOAT64 	Approximate numeric values with fractional components
+Numeric 	NUMERIC 	Exact numeric values with fractional components
+Boolean 	BOOL 	TRUE or FALSE (case insensitive)
+String 	STRING 	Variable-length character (Unicode) data
+Bytes 	BYTES 	Variable-length binary data
+Date 	DATE 	A logical calendar date
+Date/Time 	DATETIME 	A year, month, day, hour, minute, second, and subsecond
+Time 	TIME 	A time, independent of a specific date
+Timestamp 	TIMESTAMP 	An absolute point in time, with microsecond precision
+Struct (Record) 	STRUCT 	Container of ordered fields each with a type (required) and field name (optional)
+
+Modes
+
+Nullable 	Column allows NULL values (default)
+Required 	NULL values are not allowed
+Repeated 	Column contains an array of values of the specified type
+
+Specifying a JSON schema file
+
+If you prefer not to specify your schema manually, you can create a JSON schema file 
+
+nested and repeated columns
+
+BigQuery performs best when your data is denormalized. 
+Rather than preserving a relational schema such as a star or snowflake schema, 
+denormalize your data and take advantage of nested and repeated columns.
+
+To specify nested or nested and repeated columns, you use the RECORD (STRUCT) data type.
+
+When you load nested and repeated data, your schema cannot contain more than 15 levels of nested STRUCTs
+
+Example schema:
+addresses (a nested and repeated field)
+    addresses.status (current or previous)
+    addresses.address
+
+Schema auto-detection
+
+Schema auto-detection is available when you load data into BigQuery, and when you query an external data source.
+
+When auto-detection is enabled, 
+BigQuery starts the inference process by selecting a random file in the data source 
+and scanning up to 100 rows of data to use as a representative sample. 
+
+To enable schema auto-detection when loading data:
+
+    Cloud Console: In the Schema section, for Auto detect
+    CLI: Use the bq load command with the --autodetect parameter.
+
+When enabled, BigQuery makes a best-effort attempt to automatically infer the schema for CSV and JSON files.
+
+Schema auto-detection is not used with Avro files, Parquet files, ORC files, Firestore export files, or Datastore export files. 
+
+BigQuery natively supports the following schema modifications:
+
+    Adding columns to a schema definition
+    Relaxing a column's mode from REQUIRED to NULLABLE
+
+All other schema modifications are unsupported and require manual workarounds, including:
+    Changing a column's name
+    Changing a column's data type
+    Changing a column's mode (aside from relaxing REQUIRED columns to NULLABLE)
+    Deleting a column
+
+Manually changing table schemas
+
+Option 1: Using a query
+
+To change a column's name using a SQL query, select all the columns in the table and alias the column you need to rename. 
+You can use the query result to <overwrite> the existing table or to create a new destination table. 
+Pros
+
+    Using a query to write the data to a new destination table preserves your original data.
+    If you use the query job to overwrite the original table, you incur storage costs for one table instead of two, but you lose the original data.
+
+Cons
+
+    Renaming a column using a query requires you to scan the entire table — The query charges can be significant if the table is very large.
+    If you write the query results to a new destination table, you incur storage costs for both the old table and the new one (unless you delete the old one).
+
+Option 2: Exporting your data and loading it into a new table
+
+You can also rename a column by exporting your table data to Cloud Storage, and then loading the data into a new table with a schema definition containing the correct column name. You can also use the load job to overwrite the existing table.
+Pros
+
+    You are not charged for the export job or the load job. Currently, BigQuery load and export jobs are free.
+    If you use the load job to overwrite the original table, you incur storage costs for one table instead of two, but you lose the original data.
+
+Cons
+
+    If you load the data into a new table, you incur storage costs for the original table and the new table (unless you delete the old one).
+    You incur costs for storing the exported data in Cloud Storage.

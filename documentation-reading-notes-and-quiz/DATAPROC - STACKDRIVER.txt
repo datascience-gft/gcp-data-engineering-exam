@@ -1,0 +1,37 @@
+Dataproc job and cluster logs can be viewed, searched, filtered, and archived in Stackdriver Logging.
+
+
+Dataproc job logs in Stackdriver
+
+When you run a Dataproc job, job driver output is streamed to the Cloud Console, displayed in the command terminal window (for jobs submitted from the command line), and stored in Cloud Storage (see Accessing job driver output). The section explains how to enable Dataproc to also save job driver logs in Logging.
+Enabling job driver logs in Stackdriver Logging
+
+To enable job driver logs in Logging, set the following cluster property when creating the cluster:
+
+    dataproc:dataproc.logging.stackdriver.job.driver.enable=true
+
+The following cluster properties are also required, and are set by default when a cluster is created:
+
+    dataproc:dataproc.logging.stackdriver.enable=true
+    dataproc:jobs.file-backed-output.enable=true
+
++ Enabling YARN container logs in Stackdriver Logging
+
+To enable job resourcing of YARN container logs, set the following cluster property when creating the cluster:
+
+    dataproc:dataproc.logging.stackdriver.job.yarn.container.enable=true
+
+The following property is also required, and is set by default when a cluster is created;
+
+    dataproc:dataproc.logging.stackdriver.enable=true
+
+
+
+
+Stackdriver Monitoring provides visibility into the performance, uptime, and overall health of cloud-powered applications. Stackdriver collects and ingests metrics, events, and metadata from Dataproc clusters to generate insights via dashboards and charts.
+
+Use Stackdriver cluster metrics to monitor the performance and health of Dataproc clusters.
+
+    See Stackdriver Pricing to understand your costs.
+
+    See Monitoring Quotas and limits for information on metric data retention.

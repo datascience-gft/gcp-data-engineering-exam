@@ -1,0 +1,84 @@
+A dataset is contained within a specific project. 
+Datasets are top-level containers that are used to organize and control access to your tables and views. 
+A table or view must belong to a dataset, 
+so you need to create at least one dataset before loading data into BigQuery.
+
+limitations:
+You can set the geographic location at creation time only. 
+After a dataset has been created, the location becomes immutable 
+All tables referenced in a query must be stored in datasets in the same location.
+When copying a table, the datasets containing the source table and destination table must reside in the same location.
+You cannot move a dataset from one location to another, but you can manually move (recreate) a dataset. 
+
+Dataset pricing
+
+You are not charged for creating, updating, or deleting a dataset.
+
+There are two types of locations:
+
+    A regional location
+    A multi-regional location contains at least two geographic places. 
+
+
+BigQuery determines the location to run the job based on the datasets <referenced in the request>. 
+
+When you use the command-line tool, supply the --location global flag and set the value to your location.
+
+When you query data in an external data source such as Cloud Storage, the data you're querying must be in the same location as your BigQuery dataset.
+
+to create a dataset, permissions:
+    bigquery.dataEditor
+    bigquery.dataOwner
+    bigquery.user
+    bigquery.admin
+
+Copying datasets
+
+You can copy a dataset within a region or from one region to another, without extracting, moving, and reloading data into BigQuery. 
+
+Data type limitations
+
+    Copying views is not supported.
+    Copying external tables is not supported.
+
+The source dataset size maximum is 20,000 tables in it.
+
+Table limitations
+
+    Copying partitioned tables is currently supported. However, appending data to a partitioned table is not supported.
+
+Currently, you cannot grant permissions on tables, views, columns, or rows. 
+A dataset is the lowest level resource that supports access controls in BigQuery.
+
+if you grant the bigquery.dataOwner Cloud IAM role to a user on a specific dataset, that user can create, update, and delete tables and views in the dataset.
+
+to assign or update dataset access controls,permissions:
+
+    bigquery.dataOwner
+    bigquery.admin
+
+
+to update dataset properties
+permissions:
+
+    bigquery.dataOwner
+    bigquery.admin
+
+You can set a default table expiration time at the dataset level, 
+Sor you can set a table's expiration time when the table is created.
+
+You can set a default partition expiration time at the dataset level that affects all newly created partitioned tables, 
+or you can set a partition expiration time for individual tables when the partitioned tables are created.
+
+Deleting datasets
+
+permissions:
+    bigquery.dataOwner
+    bigquery.admin
+
+In a single region, data is stored only in the region. 
+There is no Google Cloud–provided backup or replication to another region. 
+
+A multi-region is a large geographic area, that contains two or more geographic places. I
+n a multi-region, data is stored in a single region but is backed up in a geographically-separated region to provide resilience to a regional disaster. 
+The recovery and failover process is managed by BigQuery.
