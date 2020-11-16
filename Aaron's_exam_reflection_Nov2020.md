@@ -166,11 +166,11 @@ themselves may not necessarily make sense.
 ## Recommended materials 
 Recommended efforts: 3/5 worth going through at least once to familiarise yourself with GCP products
 1. Qwiklabs courses:
-    2. [Google Cloud Platform Big Data and Machine Learning Fundamentals](https://googlecourses.qwiklabs.com/course_templates/3?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&search_id=5773044)
-    3. [Modernizing Data Lakes and Data Warehouses with GCP](https://googlecourses.qwiklabs.com/course_templates/54?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&search_id=5773058)
-    4. [Building Batch Data Pipelines on GCP](https://googlecourses.qwiklabs.com/course_templates/53?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&search_id=5773059)
-    5. [Building Resilient Streaming Analytics Systems on GCP](https://googlecourses.qwiklabs.com/course_templates/52?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&search_id=5773062)
-    6. [Smart Analytics, Machine Learning, and AI on GCP](https://googlecourses.qwiklabs.com/course_templates/55?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&search_id=5773071) 
+   1. [Google Cloud Platform Big Data and Machine Learning Fundamentals](https://googlecourses.qwiklabs.com/course_templates/3?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&search_id=5773044)
+   1. [Modernizing Data Lakes and Data Warehouses with GCP](https://googlecourses.qwiklabs.com/course_templates/54?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&search_id=5773058)
+   1. [Building Batch Data Pipelines on GCP](https://googlecourses.qwiklabs.com/course_templates/53?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&search_id=5773059)
+   1. [Building Resilient Streaming Analytics Systems on GCP](https://googlecourses.qwiklabs.com/course_templates/52?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&search_id=5773062)
+   1. [Smart Analytics, Machine Learning, and AI on GCP](https://googlecourses.qwiklabs.com/course_templates/55?catalog_rank=%7B%22rank%22%3A1%2C%22num_filters%22%3A0%2C%22has_search%22%3Atrue%7D&search_id=5773071) 
 1. [gcp documentations](documentation-reading-notes-and-quiz/) summarized by Lu
    - A good collection of the GCP products docs and highly relevant to the exam, covering several topics:
    BigQuery, Dataflow, Dataproc, PubSub
