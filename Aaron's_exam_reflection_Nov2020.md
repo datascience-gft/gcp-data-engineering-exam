@@ -23,11 +23,16 @@ so do understand the scenarios carefully and look at the answers critically.
 - authorized views (dataset-level access)
   - nothing unexpected once you went through the materials in the next section
 - audit data access logs (project-level or organization aggregated) to differentiate access for different users
-- BigQuery ML
+- BigQuery ML, serving BigQuery ML with low latancy (service account with access to query, create view, dataflow pipeline)
 - stackdriver for monitoring 
   - question was like you want to monitor your BigQuery slot utilization, what you should do? 
     The answer was using stackdriver for monitoring BigQuery slot utilization
-- RAND(), HASH(), stratified sampling with OVER() functions
+- RAND(), HASH(), stratified sampling with OVER() functions, dataflow pipeline calculate hashes of tables
+  - question was comparing two tables in BQ which do not have a matching key. 
+- A company has 2000 simultaneous slots and wants manage better.
+- BQ permissions: want one group of user to have write + create tables another group to have query only, what permissions do you give?
+- BQ streaming
+- BQ update error from 1 million row CSV options include: increase quoto, split csv file (I picked this one), ask for less data
 
 `Cloud Storage
 `
@@ -66,7 +71,9 @@ used as much as other products in our daily task and found Apache Beam concepts 
   "drain" to stop the pipeline and set up a new pipeline; 4. use "cancel" to stop the pipeline and set up a new pipeline; 
   I was not sure between answer 1 and 3 because I remember this is some incompatibility issues and was unsure whether 
   changing windowing and triggering mechanism is one of them. After the exam, I checked the documentation and found the 
-  above link explaining we need caution but we can update pipelines with changing windowing and triggering mechanism. 
+  above link explaining we need caution but we can update pipelines with changing windowing and triggering mechanism.
+- Dealing with corrputed data in dataflow: side-input with boolian marker, groupby key or parado to remove bad data.
+- Dofn with try expect block.
 
 `Cloud Dataproc
 `
@@ -105,6 +112,7 @@ used as much as other products in our daily task and found Apache Beam concepts 
   what should you do? 
   The answer was hyperparameter tuning and the other answers were like use DL, for DL always beats SVMs, etc which can 
   be easily ruled out also. 
+- Location feature for house prediction: lat/lon, lat/lon cross, lat/lon cross with l1, lat/lon cross with l2
 
 `Cloud Dataprep
 `
@@ -123,12 +131,14 @@ used as much as other products in our daily task and found Apache Beam concepts 
 - [fail-over replica](https://cloud.google.com/sql/docs/mysql/high-availability)
 - collect logs from MariaDB databases with Stackdriver logging agent
   - Maria DB is  a community-developed, commercially supported fork of the MySQL relational database management system (RDBMS)) using 
+  - Want to monitor Maria DB with stack driver: options included use mysql plugin, use fluent id plugin to check maria db logs
 
 `Datastore` 
 - snapshot and import Datastore export into BigQuery
 
 `BigTable`
 - single-cluster routing for replica
+- Want to provide new analytical function without disturbing current cluster useage.
 
 
 `Transfer Appliance` 
@@ -136,7 +146,27 @@ used as much as other products in our daily task and found Apache Beam concepts 
 (20MB/min), which should you do
 
 `Security` 
-- CSMK 
+- CSMK
+- Customer supplied keys for google storage, provide key in api call to gcs
+
+
+`Move data with no external ips allowed`
+- Company had on-prem data to move to cloud storage cannot use external ips. Transfer appliance was not an option. Options included gsutil rsync, computer engine with FTP.
+
+`Permissions policy`
+- Large company with many project + people how to setup permissions (pick 2)
+  - Options I chose:  Define roles and assign teams to roles, use permission inheritance
+  - Other options: use deployment manager
+  
+`Cloud vison API`
+- Want to setup image classification quickly (within 2 days), have 750x1000 images available, do you use the data as is or only use 250 images per class?
+
+`Cloud composer`
+- Have a multi-step pipeline which takes place across multiple clouds.
+
+`TPU`
+- Running tensorflow with custom c++, do you need custom ops or run as is on tpu machine.
+
 
 # Exam preparation materials
 
